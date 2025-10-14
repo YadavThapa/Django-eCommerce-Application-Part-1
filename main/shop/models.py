@@ -21,6 +21,7 @@ import sys
 from django.contrib.auth import get_user_model  # type: ignore
 
 from django.db import models  # type: ignore
+from django.db.models import Avg  # type: ignore
 from django.db.models.signals import post_save  # type: ignore
 from django.dispatch import receiver  # type: ignore
 from django.urls import reverse  # type: ignore
@@ -226,6 +227,23 @@ if not _SKIP:
         def is_in_stock(self) -> bool:
             """Check if product is in stock."""
             return self.quantity > 0
+
+        @property
+        def average_rating(self) -> int:
+            """Return the average rating for this product as an int (0-5).
+
+            This is intentionally lightweight and defensive: if there are no
+            reviews the property returns 0. Templates expect a numeric value
+            so they can render star icons using comparisons like
+            ``forloop.counter <= product.average_rating``.
+            """
+            try:
+                agg = self.reviews.aggregate(avg=Avg("rating"))
+                avg = agg.get("avg") or 0
+                # Round to nearest integer for simple star rendering
+                return int(round(avg)) if avg else 0
+            except Exception:
+                return 0
 
         class Meta:
             """Meta configuration for Product model."""

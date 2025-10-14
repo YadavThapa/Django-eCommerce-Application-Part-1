@@ -251,7 +251,7 @@
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="price-badge">${{ product.price }}</span>
                                         {% if product.average_rating > 0 %}
-                                        <div class="rating">
+                                        <div class="rating" title="Average rating: {{ product.average_rating }} of 5">
                                             {% for i in "12345" %}
                                                 {% if forloop.counter <= product.average_rating %}
                                                     <i class="fas fa-star"></i>

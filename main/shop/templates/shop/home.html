@@ -236,11 +236,11 @@
                             </p>
                             <p class="card-text flex-grow-1">{{ product.description|truncatechars:100 }}</p>
                             
-                            <div class="mt-auto">
+                                <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h5 class="text-primary mb-0">${{ product.price }}</h5>
                                     {% if product.average_rating > 0 %}
-                                    <div class="rating">
+                                    <div class="rating" title="Average rating: {{ product.average_rating }} of 5">
                                         {% for i in "12345" %}
                                             {% if forloop.counter <= product.average_rating %}
                                                 <i class="fas fa-star"></i>
