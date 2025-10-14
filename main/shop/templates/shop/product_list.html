@@ -251,14 +251,19 @@
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="price-badge">${{ product.price }}</span>
                                         {% if product.average_rating > 0 %}
-                                        <div class="rating" title="Average rating: {{ product.average_rating }} of 5">
-                                            {% for i in "12345" %}
-                                                {% if forloop.counter <= product.average_rating %}
-                                                    <i class="fas fa-star"></i>
-                                                {% else %}
-                                                    <i class="far fa-star"></i>
-                                                {% endif %}
-                                            {% endfor %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="rating me-2" title="Average rating: {{ product.average_rating }} of 5">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= product.average_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ product.reviews.count }} review{% if product.reviews.count != 1 %}s{% endif %}
+                                            </small>
                                         </div>
                                         {% endif %}
                                     </div>
