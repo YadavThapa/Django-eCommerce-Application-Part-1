@@ -11,6 +11,7 @@ from django.core.paginator import Paginator  # type: ignore
 
 # Email functionality imported in functions as needed
 from django.db.models import Q  # type: ignore
+from django.db.models import Count, Avg  # type: ignore
 from django.db import DatabaseError  # type: ignore
 from django.shortcuts import (  # type: ignore
     get_object_or_404,
@@ -56,9 +57,11 @@ logger = logging.getLogger(__name__)
 
 def home(request):
     """Homepage view"""
-    featured_products = Product.objects.filter(is_active=True, quantity__gt=0).order_by(
-        "-created_at"
-    )[:8]
+    featured_products = (
+        Product.objects.filter(is_active=True, quantity__gt=0)
+        .annotate(review_count=Count("reviews"), avg_rating=Avg("reviews__rating"))
+        .order_by("-created_at")[:8]
+    )
     categories = Category.objects.all()[:6]
     context = {
         "featured_products": featured_products,
@@ -168,7 +171,9 @@ def product_list(request):
     """Display list of all products with filtering and search"""
 
     # Get all active products
-    products = Product.objects.filter(is_active=True)
+    products = Product.objects.filter(is_active=True).annotate(
+        review_count=Count("reviews"), avg_rating=Avg("reviews__rating")
+    )
 
     # Search functionality
     search_query = request.GET.get("search", "")

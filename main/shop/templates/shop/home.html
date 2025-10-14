@@ -239,11 +239,12 @@
                                 <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h5 class="text-primary mb-0">${{ product.price }}</h5>
-                                    {% if product.average_rating > 0 %}
+                                    {% with avg=product.avg_rating|default:product.average_rating count=product.review_count|default:product.reviews.count %}
+                                    {% if avg and avg|float > 0 %}
                                     <div class="d-flex align-items-center">
-                                        <div class="rating me-2" title="Average rating: {{ product.average_rating }} of 5">
+                                        <div class="rating me-2" title="Average rating: {{ avg }} of 5">
                                             {% for i in "12345" %}
-                                                {% if forloop.counter <= product.average_rating %}
+                                                {% if forloop.counter <= avg|float %}
                                                     <i class="fas fa-star"></i>
                                                 {% else %}
                                                     <i class="far fa-star"></i>
@@ -251,10 +252,11 @@
                                             {% endfor %}
                                         </div>
                                         <small class="text-muted">
-                                            {{ product.reviews.count }} review{% if product.reviews.count != 1 %}s{% endif %}
+                                            {{ count }} review{% if count != 1 %}s{% endif %}
                                         </small>
                                     </div>
                                     {% endif %}
+                                    {% endwith %}
                                 </div>
                                 
                                 <div class="d-grid gap-2">
