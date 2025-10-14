@@ -285,6 +285,11 @@
                                         </button>
                                         {% endif %}
                                     </div>
+                                    <div class="mt-2 text-center">
+                                        <a href="{% url 'shop:product_detail' product.pk %}#reviews" class="text-decoration-none small">
+                                            View reviews
+                                        </a>
+                                    </div>
                                     {% if product.quantity <= 5 and product.quantity > 0 %}
                                     <small class="text-warning mt-1 d-block text-center">Only {{ product.quantity }} left!</small>
                                     {% endif %}
