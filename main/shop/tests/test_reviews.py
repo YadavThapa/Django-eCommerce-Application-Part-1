@@ -26,7 +26,11 @@ class ReviewVerificationTests(TestCase):
         )
 
         # Create an order for buyer containing the product
-        self.order = Order.objects.create(buyer=self.buyer, total_amount=10.00, shipping_address="addr")
+        self.order = Order.objects.create(
+            buyer=self.buyer,
+            total_amount=10.00,
+            shipping_address="addr",
+        )
         OrderItem.objects.create(order=self.order, product=self.product, quantity=1, price=10.00)
 
         self.client = Client()
@@ -44,10 +48,15 @@ class ReviewVerificationTests(TestCase):
         # Log in as browser, POST review
         self.client.login(username="browser", password="pass")
         url = reverse("shop:add_review", kwargs={"product_id": self.product.pk})
-        resp = self.client.post(url, {"rating": 4, "comment": "Looks good"}, follow=True)
+        resp = self.client.post(
+            url, {"rating": 4, "comment": "Looks good"}, follow=True
+        )
+        # Non-purchasers can submit reviews but they should be unverified
         self.assertEqual(resp.status_code, 200)
         review = Review.objects.get(product=self.product, user=self.browser)
-        self.assertFalse(review.is_verified, "Reviews by non-purchasers should be unverified")
+        self.assertFalse(
+            review.is_verified, "Reviews by non-purchasers should be unverified"
+        )
 
     def test_duplicate_review_prevented(self):
         # Buyer posts once

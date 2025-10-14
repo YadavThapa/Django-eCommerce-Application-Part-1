@@ -25,15 +25,5 @@ except (ImportError, ModuleNotFoundError):
     # We intentionally do not swallow other exceptions here to avoid masking
     # unexpected runtime errors during startup.
     pass
-"""Lightweight top-level `shop` package.
-
-This file intentionally avoids importing `main.shop` at import time. It
-exists so top-level imports like ``import shop`` succeed for editors and
-for runtime code. Actual aliasing between ``shop`` and ``main.shop`` is
-performed early in entry points (for example, in ``manage.py``) to avoid
-import-order races that could register models under multiple module
-identities.
-"""
-
 # Package marker: keep the package importable without side-effects.
-__all__ = []
+__all__: list[str] = []

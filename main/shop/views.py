@@ -18,6 +18,7 @@ from django.shortcuts import (  # type: ignore
     redirect,
     render,
 )
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponse  # type: ignore
 from django.urls import reverse  # type: ignore
 from django.views.decorators.http import require_POST  # type: ignore
@@ -81,6 +82,14 @@ def register(request):
             messages.success(request, f"Account created for {username}!")
             # Log the user in
             login(request, user)
+            # After registration/login, if a safe 'next' parameter was provided,
+            # redirect there. Otherwise fall back to role-based redirect.
+            next_url = request.POST.get("next") or request.GET.get("next")
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+            ):
+                return redirect(next_url)
             # Redirect based on role
             if hasattr(user, "profile") and user.profile.role == "vendor":
                 return redirect("shop:vendor_dashboard")
@@ -259,11 +268,34 @@ def product_detail(request, pk):
 
     # Check if user has already reviewed this product
     user_review = None
+    has_purchased = False
     if request.user.is_authenticated:
         try:
             user_review = Review.objects.get(product=product, user=request.user)
         except Review.DoesNotExist:
-            pass
+            user_review = None
+
+        # Determine if the authenticated user purchased this product.
+        try:
+            has_purchased = OrderItem.objects.filter(
+                product=product, order__buyer=request.user
+            ).exists()
+            # Also consider guest orders that used this user's email prior to registration
+            if not has_purchased and request.user.email:
+                has_purchased = OrderItem.objects.filter(
+                    product=product, order__guest_email__iexact=request.user.email
+                ).exists()
+        except DatabaseError:
+            # Defensive: if order lookup fails due to DB issues, treat as not purchased
+            has_purchased = False
+
+    # Provide an empty ReviewForm so the product detail page can render
+    # an inline review form for authenticated users who haven't reviewed yet.
+    form = None
+    if request.user.is_authenticated and not user_review:
+        # ReviewForm construction should be deterministic; let errors surface
+        # so they can be fixed instead of being silently ignored.
+        form = ReviewForm()
 
     # Related products
     related_products = Product.objects.filter(
@@ -274,6 +306,8 @@ def product_detail(request, pk):
         "product": product,
         "reviews": reviews,
         "user_review": user_review,
+        "has_purchased": has_purchased,
+        "form": form,
         "related_products": related_products,
         "verified_reviews": verified_reviews,
         "unverified_reviews": unverified_reviews,
@@ -636,43 +670,84 @@ def add_review(request, product_id):
         messages.error(request, "You have already reviewed this product!")
         return redirect("shop:product_detail", pk=product_id)
 
-    # Check if user has purchased this product (verified purchase)
-    has_purchased = OrderItem.objects.filter(
-        product=product, order__buyer=request.user
-    ).exists()
+    # Determine whether the user has purchased the product.
+    has_purchased = False
+    try:
+        has_purchased = OrderItem.objects.filter(
+            product=product, order__buyer=request.user
+        ).exists()
+        if not has_purchased and request.user.email:
+            has_purchased = OrderItem.objects.filter(
+                product=product, order__guest_email__iexact=request.user.email
+            ).exists()
+    except DatabaseError:
+        # If an order lookup fails due to DB errors, treat as not purchased
+        has_purchased = False
 
+    # Allow creating a review for any authenticated user; mark it verified
+    # when the user has purchased the product (has_purchased True).
     if request.method == "POST":
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.product = product
-            review.user = request.user
-            # Set verification status based on purchase history
-            review.is_verified = has_purchased
-            review.save()
+        # Log incoming POST keys (not values) for debugging; avoid logging sensitive data
+        post_keys = list(request.POST.keys())
+        logger.debug(
+            "add_review POST received for product_id=%s user=%s POST_keys=%s",
+            product_id,
+            getattr(request.user, "username", "anonymous"),
+            post_keys,
+        )
 
-            # Show success messages for verified vs unverified reviews
-            if has_purchased:
+        form = ReviewForm(request.POST)
+        if not form.is_valid():
+            # Log form errors to aid debugging (errors are safe to log)
+            logger.warning(
+                "ReviewForm invalid for product_id=%s user=%s errors=%s",
+                product_id,
+                getattr(request.user, "username", "anonymous"),
+                form.errors.as_json(),
+            )
+        else:
+            try:
+                review = form.save(commit=False)
+                review.product = product
+                review.user = request.user
+                # mark verified only when purchase evidence exists
+                review.is_verified = bool(has_purchased)
+                review.save()
+            except DatabaseError as e:  # pragma: no cover - defensive logging
+                logger.exception(
+                    "Database error saving review for product_id=%s user=%s: %s",
+                    product_id,
+                    getattr(request.user, "username", "anonymous"),
+                    e,
+                )
+                messages.error(request, "Error saving your review. Please try again.")
+                return redirect("shop:product_detail", pk=product_id)
+
+            logger.info(
+                "Review saved product_id=%s user=%s verified=%s",
+                product_id,
+                request.user.username,
+                review.is_verified,
+            )
+
+            if review.is_verified:
                 messages.success(
                     request,
-                    "Verified review added successfully! "
-                    "Thank you for your feedback as a verified purchaser.",
+                    "Verified review added successfully! Thank you for your feedback.",
                 )
             else:
                 messages.success(
                     request,
-                    "Review added successfully! Your review will be marked as "
-                    "unverified since you haven't purchased this product.",
+                    (
+                        "Review added successfully! It will be marked as "
+                        "unverified because you haven't purchased this product."
+                    ),
                 )
             return redirect("shop:product_detail", pk=product_id)
     else:
         form = ReviewForm()
 
-    context = {
-        "form": form,
-        "product": product,
-        "has_purchased": has_purchased,  # Pass to template for display
-    }
+    context = {"form": form, "product": product, "has_purchased": has_purchased}
     return render(request, "shop/add_review.html", context)
 
 

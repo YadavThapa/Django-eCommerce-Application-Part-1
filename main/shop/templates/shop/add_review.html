@@ -139,7 +139,7 @@
                         <label for="{{ form.comment.id_for_label }}" class="form-label">
                             <i class="fas fa-comment me-2"></i>Your Review
                         </label>
-                        {{ form.comment|add_class:"form-control" }}
+                        {{ form.comment }}
                         <small class="text-muted">
                             {% if has_purchased %}
                                 Share your experience with this product as a verified purchaser
@@ -189,76 +189,113 @@
 {% endblock %}
 
 {% block extra_js %}
+<style>
+/* Star widget styles */
+.rating-widget i {
+    font-size: 1.6rem;
+    color: #dee2e6;
+    cursor: pointer;
+    transition: color 0.12s ease-in-out, transform 0.08s ease-in-out;
+}
+.rating-widget i.active { color: #ffc107; }
+.rating-widget i.hover { color: #ffdb70; transform: translateY(-2px); }
+.rating-widget { display:inline-block; }
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Rating stars interaction
-    const stars = document.querySelectorAll('.rating-stars i');
-    const ratingInput = document.getElementById('{{ form.rating.id_for_label }}');
-    
-    stars.forEach((star, index) => {
-        star.addEventListener('click', function() {
-            const rating = index + 1;
-            ratingInput.value = rating;
-            
-            // Update visual stars
-            stars.forEach((s, i) => {
-                if (i < rating) {
-                    s.style.color = '#ffc107';
-                } else {
-                    s.style.color = '#dee2e6';
+    function initRatingWidget(ratingSelector, containerSelector) {
+        const ratingField = document.querySelector(ratingSelector);
+        if (!ratingField) return null;
+
+        // Hide native field visually but keep it for form submission
+        ratingField.style.position = 'absolute';
+        ratingField.style.left = '-9999px';
+
+        let container = null;
+        if (containerSelector) container = document.querySelector(containerSelector);
+        if (!container) {
+            // create container after the field
+            container = document.createElement('div');
+            container.className = 'rating-widget';
+            ratingField.parentNode.insertBefore(container, ratingField.nextSibling);
+        }
+
+        // if already initialized, skip
+        if (container.dataset.initialized) return container;
+
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('i');
+            star.className = 'fas fa-star';
+            star.setAttribute('data-rating', i);
+            star.setAttribute('role', 'button');
+            star.setAttribute('tabindex', '0');
+            star.setAttribute('aria-label', i + ' star');
+            container.appendChild(star);
+
+            star.addEventListener('click', function() {
+                ratingField.value = this.dataset.rating;
+                updateVisual(container, parseInt(this.dataset.rating, 10));
+            });
+
+            star.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
                 }
             });
-        });
-        
-        star.addEventListener('mouseenter', function() {
-            const rating = index + 1;
-            stars.forEach((s, i) => {
-                if (i < rating) {
-                    s.style.color = '#ffc107';
-                } else {
-                    s.style.color = '#dee2e6';
-                }
+
+            star.addEventListener('mouseenter', function() {
+                updateHover(container, parseInt(this.dataset.rating, 10));
             });
+            star.addEventListener('mouseleave', function() {
+                updateVisual(container, parseInt(ratingField.value || 0, 10));
+            });
+        }
+
+        // Initialize from current value
+        updateVisual(container, parseInt(ratingField.value || 0, 10));
+        container.dataset.initialized = '1';
+        return container;
+    }
+
+    function updateVisual(container, rating) {
+        const stars = container.querySelectorAll('i[data-rating]');
+        stars.forEach(s => {
+            const r = parseInt(s.dataset.rating, 10);
+            s.classList.remove('active', 'hover');
+            if (r <= rating) s.classList.add('active');
         });
-    });
-    
-    // Reset stars on mouse leave
-    document.querySelector('.rating-stars').addEventListener('mouseleave', function() {
-        const currentRating = ratingInput.value || 0;
-        stars.forEach((s, i) => {
-            if (i < currentRating) {
-                s.style.color = '#ffc107';
-            } else {
-                s.style.color = '#dee2e6';
+    }
+
+    function updateHover(container, rating) {
+        const stars = container.querySelectorAll('i[data-rating]');
+        stars.forEach(s => {
+            const r = parseInt(s.dataset.rating, 10);
+            s.classList.remove('hover');
+            if (r <= rating) s.classList.add('hover');
+        });
+    }
+
+    // Initialize with known form field id
+    initRatingWidget('#{{ form.rating.id_for_label }}', null);
+
+    // graceful form submit UX
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                const original = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+                setTimeout(() => {
+                    // allow some time for submit to proceed; will be replaced on page load
+                    submitBtn.innerHTML = original;
+                    submitBtn.disabled = false;
+                }, 3000);
             }
         });
-    });
-    
-    // Initialize stars based on current value
-    const currentRating = ratingInput.value || 0;
-    stars.forEach((s, i) => {
-        if (i < currentRating) {
-            s.style.color = '#ffc107';
-        } else {
-            s.style.color = '#dee2e6';
-        }
-    });
-
-    // Form submission
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(e) {
-        const submitBtn = document.querySelector('.btn-submit-review');
-        const originalText = submitBtn.innerHTML;
-        
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
-        submitBtn.disabled = true;
-        
-        // Re-enable if there's an error (fallback)
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }, 3000);
-    });
+    }
 });
 </script>
 {% endblock %}

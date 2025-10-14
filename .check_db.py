@@ -1,24 +1,33 @@
 import os
-import sys
 import pathlib
-print('PWD=', pathlib.Path.cwd())
-print('ENV DB_ENGINE=', os.environ.get('DB_ENGINE'))
-print('ENV DB_NAME=', os.environ.get('DB_NAME'))
-print('ENV DB_USER=', os.environ.get('DB_USER'))
-print('ENV DB_PASSWORD=', os.environ.get('DB_PASSWORD'))
-print('ENV DB_HOST=', os.environ.get('DB_HOST'))
-print('ENV DB_PORT=', os.environ.get('DB_PORT'))
-print('ENV DJANGO_SETTINGS_MODULE=', os.environ.get('DJANGO_SETTINGS_MODULE'))
+
+print("PWD=", pathlib.Path.cwd())
+print("ENV DB_ENGINE=", os.environ.get("DB_ENGINE"))
+print("ENV DB_NAME=", os.environ.get("DB_NAME"))
+print("ENV DB_USER=", os.environ.get("DB_USER"))
+print("ENV DB_PASSWORD=", os.environ.get("DB_PASSWORD"))
+print("ENV DB_HOST=", os.environ.get("DB_HOST"))
+print("ENV DB_PORT=", os.environ.get("DB_PORT"))
+print(
+    "ENV DJANGO_SETTINGS_MODULE=",
+    os.environ.get("DJANGO_SETTINGS_MODULE"),
+)
 # Use the default settings module used by manage.py
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','main.ecommerce_project.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.ecommerce_project.settings")
 try:
     import django
+
     django.setup()
     from django.conf import settings
-    print('DJANGO settings module:', settings.SETTINGS_MODULE)
-    print('DATABASES=', settings.DATABASES)
+
+    print("DJANGO settings module:", settings.SETTINGS_MODULE)
+    print("DATABASES=", settings.DATABASES)
+# Broad except is acceptable here because importing/initializing Django can
+# raise a wide range of errors (environment, import errors, etc.). We log
+# and fall back to a direct import. Keep lint tools aware of the intent.
+# pylint: disable=broad-except
 except Exception as e:
-    print('Django import/setup failed:', repr(e))
+    print("Django import/setup failed:", repr(e))
     # Fallback: import settings module directly
     try:
         import importlib
@@ -35,6 +44,9 @@ except Exception as e:
         else:
             print('Module has no DATABASES attribute')
     except Exception as e2:
-        print('Fallback import failed:', repr(e2))
-print('db.sqlite3 exists at repo root:', pathlib.Path('db.sqlite3').exists())
-print('db.sqlite3 exists at explicit path:', pathlib.Path(r'C:/Users/hemja/OneDrive/Desktop/Last Cleanup/db.sqlite3').exists())
+        print("Fallback import failed:", repr(e2))
+print("db.sqlite3 exists at repo root:", pathlib.Path("db.sqlite3").exists())
+print(
+    "db.sqlite3 exists at explicit path:",
+    pathlib.Path(r"C:/Users/hemja/OneDrive/Desktop/Last Cleanup/db.sqlite3").exists(),
+)

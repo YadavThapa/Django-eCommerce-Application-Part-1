@@ -1,3 +1,0 @@
-************* Module main.cart
-main\cart.py:8:0: E0401: Unable to import 'shop.cart' (import-error)
-... (truncated)

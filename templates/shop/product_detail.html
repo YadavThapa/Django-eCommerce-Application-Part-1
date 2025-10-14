@@ -96,10 +96,21 @@
                         </div>
                     {% endif %}
                 </div>
-                {% if user.is_authenticated and user.profile.role == 'buyer' and not user_review %}
-                <a href="{% url 'shop:add_review' product.pk %}" class="btn btn-outline-primary">
-                    <i class="fas fa-star me-2"></i>Write a Review
-                </a>
+                {% if not user_review %}
+                <div class="text-end">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'shop:add_review' product.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-star me-2"></i>Write a Review
+                        </a>
+                    {% else %}
+                        <a href="#" id="write-review-anon" class="btn btn-outline-primary">
+                            <i class="fas fa-star me-2"></i>Write a Review
+                        </a>
+                    {% endif %}
+                    {% if not has_purchased %}
+                        <div class="mt-2 small text-muted">Your review will be marked as <strong>unverified</strong> because you have not purchased this product.</div>
+                    {% endif %}
+                </div>
                 {% endif %}
             </div>
             
@@ -173,6 +184,37 @@
             {% else %}
             <p class="text-muted">No reviews yet. Be the first to review this product!</p>
             {% endif %}
+
+            <!-- Inline review form for authenticated users -->
+            {% if user.is_authenticated and not user_review %}
+                {% if form %}
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5>Write a review</h5>
+                        <p class="small text-muted">You can leave a review even if you haven't purchased. Reviews by purchasers are shown as <strong>verified</strong>. <span title="Verified reviews are posted by customers who purchased the product; unverified reviews are from users without purchase evidence." style="text-decoration:underline;cursor:help;">(What's this?)</span></p>
+                        <form id="inline-review-form" method="post" action="{% url 'shop:add_review' product.pk %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="id_rating" class="form-label">Rating</label>
+                                <select name="rating" id="id_rating" class="form-select" required>
+                                    <option value="">Select rating</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_comment" class="form-label">Comment</label>
+                                <textarea name="comment" id="id_comment" rows="4" class="form-control" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     
@@ -199,4 +241,100 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var anonBtn = document.getElementById('write-review-anon');
+    if (anonBtn) {
+        anonBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // create and show a simple modal dialog prompting login/register
+            var modal = document.createElement('div');
+            modal.className = 'modal fade show';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Sign in or Register to write a review</h5>
+                            <button type="button" class="btn-close" id="close-modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Please sign in to leave a review, or register a new account.</p>
+                            <div style="display:flex;gap:10px;">
+                                <form method="post" action="{% url 'shop:login' %}" style="flex:1;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.path }}?modal=1" />
+                                    <div class="mb-2">
+                                        <label>Email/Username</label>
+                                        <input type="text" name="username" class="form-control" />
+                                    </div>
+                                    <div class="mb-2">
+                                        <label>Password</label>
+                                        <input type="password" name="password" class="form-control" />
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">Sign in</button>
+                                </form>
+                                <form method="post" action="{% url 'shop:register' %}" style="flex:1;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.path }}?modal=1" />
+                                    <div class="mb-2">
+                                        <label>Username</label>
+                                        <input type="text" name="username" class="form-control" />
+                                    </div>
+                                    <div class="mb-2">
+                                        <label>Email</label>
+                                        <input type="email" name="email" class="form-control" />
+                                    </div>
+                                    <div class="mb-2">
+                                        <label>Password</label>
+                                        <input type="password" name="password1" class="form-control" />
+                                    </div>
+                                    <div class="mb-2">
+                                        <label>Confirm</label>
+                                        <input type="password" name="password2" class="form-control" />
+                                    </div>
+                                    <button class="btn btn-outline-primary" type="submit">Register</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+
+            // close handler
+            document.getElementById('close-modal').addEventListener('click', function() {
+                modal.remove();
+            });
+        });
+    }
+});
+</script>
+<script>
+// If the page was loaded with ?modal=1 (we sent this from the modal's next),
+// scroll to and focus the inline review form and remove the query param from URL.
+document.addEventListener('DOMContentLoaded', function () {
+    try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('modal') === '1') {
+            var form = document.getElementById('inline-review-form');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                var comment = document.getElementById('id_comment');
+                if (comment) comment.focus();
+            }
+            // Remove 'modal' param without reloading the page
+            params.delete('modal');
+            var newSearch = params.toString();
+            var newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
+            window.history.replaceState({}, document.title, newUrl);
+        }
+    } catch (e) {
+        // ignore any JS errors here; not critical
+        console.error('modal focus helper error', e);
+    }
+});
+</script>
 {% endblock %}

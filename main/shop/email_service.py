@@ -59,11 +59,20 @@ def generate_invoice_pdf(order):
     elements.append(Spacer(1, 12))
 
     # Order information
+    # Safely resolve customer display name and email for registered or guest
+    buyer = getattr(order, "buyer", None)
+    if buyer:
+        customer_name = buyer.get_full_name() or getattr(buyer, "username", "")
+        customer_email = getattr(buyer, "email", "")
+    else:
+        customer_name = order.guest_name or "Guest"
+        customer_email = order.guest_email or ""
+
     order_info = [
         ["Order ID:", order.order_id],
         ["Date:", order.created_at.strftime("%B %d, %Y")],
-        ["Customer:", order.buyer.get_full_name() or order.buyer.username],
-        ["Email:", order.buyer.email],
+        ["Customer:", customer_name],
+        ["Email:", customer_email],
         ["Status:", order.get_status_display()],
     ]
 
@@ -187,14 +196,21 @@ def send_order_confirmation_email(order):
         pdf_data = generate_invoice_pdf(order)
 
         # Prepare email context
+        # Determine recipient and customer object for templates
+        buyer = getattr(order, "buyer", None)
+        recipient_email = (
+            buyer.email if buyer and getattr(buyer, "email", None) else order.guest_email
+        )
+
         context = {
             "order": order,
-            "customer": order.buyer,
+            "customer": buyer or {
+                "name": order.guest_name,
+                "email": order.guest_email,
+            },
             "order_items": order.items.all(),
             "subtotal": sum(item.price * item.quantity for item in order.items.all()),
-            "tax": order.total_amount
-            * Decimal("0.08")
-            / Decimal("1.08"),  # Calculate tax from total
+            "tax": order.total_amount * Decimal("0.08") / Decimal("1.08"),
             "total": order.total_amount,
         }
 
@@ -215,7 +231,8 @@ def send_order_confirmation_email(order):
             "DEFAULT_FROM_EMAIL",
             "noreply@himalayanecommerce.com",
         )
-        to_email = [order.buyer.email]
+        # Fall back to guest email when buyer is not present
+        to_email = [recipient_email] if recipient_email else []
 
         msg = EmailMultiAlternatives(
             subject,
@@ -233,7 +250,13 @@ def send_order_confirmation_email(order):
         )
 
         # Send email
-        msg.send()
+        if to_email:
+            msg.send()
+        else:
+            logger.warning(
+                "No recipient email available for order %s; skipping send",
+                order.order_id,
+            )
 
         logger.info(
             "Order confirmation email sent successfully for order %s",

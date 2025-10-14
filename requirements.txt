@@ -5,4 +5,8 @@ django-extensions==3.2.3
 python-decouple==3.8
 django-crispy-forms==2.1
 crispy-bootstrap4==2022.1
-# Add other dependencies found in your project environment as needed
+
+
+# Please refer below link as well https://github.com/YadavThapa/Django-eCommerce-Application-Part-1
+
+# All supportings have been uploaded in the github repository.
