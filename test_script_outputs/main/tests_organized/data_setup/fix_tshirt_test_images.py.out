@@ -1,0 +1,8 @@
+--- RUN: main\tests_organized\data_setup\fix_tshirt_test_images.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\data_setup\fix_tshirt_test_images.py"
+--- OUTPUT ---
+✅ Updated T-shirt with proper clothing image
+❌ Test Product not found
+🎨 Created and assigned proper product images!
+
+--- EXIT CODE: 0

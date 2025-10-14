@@ -1,0 +1,3 @@
+[flake8]
+exclude = .venv, */migrations/*, shop/**/migrations/*, shop_old/**/migrations/*, shop_old, archived, legacy_root_files
+max-line-length = 88

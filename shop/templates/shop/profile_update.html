@@ -1,0 +1,18 @@
+{# Minimal fallback template used during runtime checks. #}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Profile update</title>
+  </head>
+  <body>
+    <h1>Profile Update (Fallback)</h1>
+    <p>This is a temporary fallback template added by the test helper to
+    allow profile rendering when the canonical template is not present.</p>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Save</button>
+    </form>
+  </body>
+</html>

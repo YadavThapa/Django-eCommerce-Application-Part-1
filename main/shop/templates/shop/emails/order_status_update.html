@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status Update - Himalayan eCommerce</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .status-update {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .order-details {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Order Status Update</h1>
+        <p>Hello {{ customer.get_full_name|default:customer.username }}!</p>
+    </div>
+    
+    <div class="content">
+        <div class="status-update">
+            <h3>Your order status has been updated</h3>
+            <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+            <p><strong>Previous Status:</strong> {{ old_status }}</p>
+            <p><strong>New Status:</strong> {{ new_status }}</p>
+        </div>
+        
+        <div class="order-details">
+            <h3>Order Information</h3>
+            <p><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
+            <p><strong>Total Amount:</strong> ${{ order.total_amount|floatformat:2 }}</p>
+            <p><strong>Items Count:</strong> {{ order.items.count }} item{{ order.items.count|pluralize }}</p>
+        </div>
+        
+        {% if new_status == "Shipped" %}
+        <p>Great news! Your order has been shipped and is on its way to you. You should receive it within 3-5 business days.</p>
+        {% elif new_status == "Delivered" %}
+        <p>Wonderful! Your order has been delivered. We hope you enjoy your purchase!</p>
+        {% elif new_status == "Cancelled" %}
+        <p>Your order has been cancelled. If you have any questions about this cancellation, please contact our customer service team.</p>
+        {% else %}
+        <p>Your order status has been updated. If you have any questions about this update, please don't hesitate to contact us.</p>
+        {% endif %}
+        
+        <div style="text-align: center;">
+            <a href="#" class="button">View Order Details</a>
+        </div>
+        
+        <p>Thank you for choosing Himalayan eCommerce. If you have any questions, our customer service team is here to help.</p>
+    </div>
+    
+    <div class="footer">
+        <p>Thank you for choosing Himalayan eCommerce!</p>
+        <p>Customer Support: support@himalayanecommerce.com | 1-800-HIMALAY</p>
+        <p>&copy; 2024 Himalayan eCommerce. All rights reserved.</p>
+    </div>
+</body>
+</html>

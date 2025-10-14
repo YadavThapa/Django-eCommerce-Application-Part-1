@@ -1,0 +1,21 @@
+--- RUN: main\tests_organized\integration\test_web_form.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\integration\test_web_form.py"
+--- OUTPUT ---
+=== WEB FORM TEST ===
+✅ User: demo_buyer (Password: buyer123)
+✅ Force login successful
+✅ Product: Premium Cotton T-Shirt (ID: 27)
+📊 Initial cart items: 1
+🛒 Add to cart response: 303
+📊 Final cart items: 1
+❌ FAILED: Item not added via web form
+
+🔍 Debugging web form...
+Product page status: 200
+Messages:
+  - Premium Cotton T-Shirt added to cart!
+
+📦 Current Cart Contents:
+  - Premium Cotton T-Shirt: 15 x $24.99
+
+--- EXIT CODE: 0

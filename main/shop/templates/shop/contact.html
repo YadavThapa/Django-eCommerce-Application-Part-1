@@ -1,0 +1,29 @@
+{% extends 'shop/base.html' %}
+{% block title %}Contact - Himalayan eCommerce{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <h2>Contact Us</h2>
+      <p class="lead">Have questions? Reach out to our support team.</p>
+      <form method="post" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="id_name" class="form-label">Name</label>
+          <input id="id_name" name="name" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label for="id_email" class="form-label">Email</label>
+          <input id="id_email" name="email" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label for="id_message" class="form-label">Message</label>
+          <textarea id="id_message" name="message" rows="5" class="form-control"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

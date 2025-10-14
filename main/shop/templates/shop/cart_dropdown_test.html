@@ -1,0 +1,143 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Cart Dropdown Test - Himalayan eCommerce{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-dropdown me-2"></i>Cart Dropdown Functionality Test
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle me-2"></i>Cart Dropdown Features</h5>
+        <p>The cart icon now shows a dropdown with cart items when clicked, instead of navigating to a separate page.</p>
+        
+        <h6>How to Test:</h6>
+        <ol>
+            <li><strong>Add Items:</strong> Click "Add Test Items" below to populate your cart</li>
+            <li><strong>Click Cart Icon:</strong> Click the cart icon in the navigation bar</li>
+            <li><strong>View Dropdown:</strong> See cart items displayed in a dropdown popup</li>
+            <li><strong>Navigate:</strong> Use "View Cart" or "Checkout" buttons in the dropdown</li>
+            <li><strong>Close:</strong> Click outside the dropdown or press Esc to close</li>
+        </ol>
+    </div>
+    
+    <!-- Test Actions -->
+    <div class="alert alert-warning">
+        <h5><i class="fas fa-tools me-2"></i>Test Actions</h5>
+        <div class="btn-group-vertical w-100">
+            <a href="{% url 'shop:add_test_items' %}" class="btn btn-success mb-2">
+                <i class="fas fa-plus me-2"></i>Add Test Items to Cart
+            </a>
+            <button onclick="testCartAPI()" class="btn btn-info mb-2">
+                <i class="fas fa-api me-2"></i>Test Cart API
+            </button>
+            <button onclick="simulateCartClick()" class="btn btn-primary mb-2">
+                <i class="fas fa-mouse-pointer me-2"></i>Simulate Cart Icon Click
+            </button>
+            <a href="{% url 'shop:cart_detail' %}" class="btn btn-secondary mb-2">
+                <i class="fas fa-shopping-cart me-2"></i>View Full Cart Page
+            </a>
+        </div>
+    </div>
+    
+    <!-- API Test Results -->
+    <div class="alert alert-secondary">
+        <h5><i class="fas fa-code me-2"></i>API Test Results</h5>
+        <pre id="apiResults">Click "Test Cart API" to see results...</pre>
+    </div>
+    
+    <!-- Features List -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-check-circle me-2"></i>Dropdown Features</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-eye text-success me-2"></i>Shows cart items with images</li>
+                        <li><i class="fas fa-info text-primary me-2"></i>Displays product names and prices</li>
+                        <li><i class="fas fa-calculator text-info me-2"></i>Shows quantities and totals</li>
+                        <li><i class="fas fa-shopping-bag text-warning me-2"></i>View Cart button</li>
+                        <li><i class="fas fa-credit-card text-success me-2"></i>Checkout button</li>
+                        <li><i class="fas fa-times text-danger me-2"></i>Click outside to close</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-keyboard me-2"></i>Keyboard Controls</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-hand-pointer text-primary me-2"></i><strong>Click Cart Icon:</strong> Toggle dropdown</li>
+                        <li><i class="fas fa-keyboard text-info me-2"></i><strong>Alt + C:</strong> Open cart dropdown</li>
+                        <li><i class="fas fa-times text-danger me-2"></i><strong>Escape:</strong> Close dropdown</li>
+                        <li><i class="fas fa-mouse text-secondary me-2"></i><strong>Click Outside:</strong> Close dropdown</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debug Info -->
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-bug me-2"></i>Debug Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Current Cart Count:</strong> <span id="currentCartCount">{{ cart_items_count|default:"0" }}</span></p>
+                <p><strong>User Status:</strong> {{ user.is_authenticated|yesno:"Authenticated,Anonymous" }}</p>
+                <p><strong>API Endpoint:</strong> <code>/cart/api/</code></p>
+                <p><strong>Dropdown ID:</strong> <code>#cartDropdown</code> or <code>#cartDropdownAnon</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function testCartAPI() {
+    const resultsDiv = document.getElementById('apiResults');
+    resultsDiv.textContent = 'Loading...';
+    
+    try {
+        const response = await fetch('/cart/api/');
+        const data = await response.json();
+        resultsDiv.textContent = JSON.stringify(data, null, 2);
+        
+        // Update cart count display
+        document.getElementById('currentCartCount').textContent = data.items_count;
+        
+        console.log('Cart API Response:', data);
+    } catch (error) {
+        resultsDiv.textContent = 'Error: ' + error.message;
+        console.error('Cart API Error:', error);
+    }
+}
+
+function simulateCartClick() {
+    const cartLink = document.querySelector('.cart-link');
+    if (cartLink) {
+        cartLink.click();
+        console.log('Cart icon clicked programmatically');
+    } else {
+        alert('Cart link not found!');
+    }
+}
+
+// Auto-test API on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(testCartAPI, 1000);
+});
+</script>
+{% endblock %}

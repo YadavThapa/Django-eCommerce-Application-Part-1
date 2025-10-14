@@ -1,0 +1,2 @@
+************* Module inspect_postgres
+db_tools\inspect_postgres.py:11:0: E5142: User model imported from django.contrib.auth.models (imported-auth-user)

@@ -1,0 +1,7 @@
+************* Module main.cart
+main\cart.py:8:0: E0401: Unable to import 'shop.cart' (import-error)
+main\cart.py:8:0: E0611: No name 'cart' in module 'shop' (no-name-in-module)
+************* Module main.context_processors
+main\context_processors.py:6:0: E0401: Unable to import 'shop.context_processors' (import-error)
+main\context_processors.py:6:0: E0611: No name 'context_processors' in module 'shop' (no-name-in-module)
+... (truncated)

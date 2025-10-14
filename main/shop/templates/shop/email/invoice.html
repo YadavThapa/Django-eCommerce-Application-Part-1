@@ -1,0 +1,315 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - {{ order.order_id }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .invoice-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .invoice-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        .invoice-header .company-name {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        .invoice-body {
+            padding: 30px;
+        }
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .detail-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 20px;
+        }
+        .detail-section h3 {
+            color: #007bff;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .detail-item {
+            margin-bottom: 8px;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .items-table th {
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+        .items-table td {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        .items-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .items-table tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .total-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .total-row.final {
+            border-top: 2px solid #007bff;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #007bff;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-processing {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        .status-shipped {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-delivered {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .thank-you {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        @media (max-width: 600px) {
+            .invoice-details {
+                flex-direction: column;
+            }
+            .items-table {
+                font-size: 0.9rem;
+            }
+            .items-table th,
+            .items-table td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <h1>INVOICE</h1>
+            <div class="company-name">Himalayan eCommerce - Shop Better with Us</div>
+        </div>
+
+        <!-- Body -->
+        <div class="invoice-body">
+            <!-- Invoice Details -->
+            <div class="invoice-details">
+                <div class="detail-section">
+                    <h3>Order Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Order ID:</span>
+                        <strong>{{ order.order_id }}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Order Date:</span>
+                        {{ order.created_at|date:"F d, Y" }}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Order Time:</span>
+                        {{ order.created_at|time:"g:i A" }}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Payment Method:</span>
+                        {{ order.payment_method|default:"Cash on Delivery" }}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Customer Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Name:</span>
+                        {{ order.buyer.get_full_name|default:order.buyer.username }}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email:</span>
+                        {{ order.buyer.email }}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Username:</span>
+                        {{ order.buyer.username }}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Shipping Address</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #007bff;">
+                        {{ order.shipping_address|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <h3 style="color: #007bff; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">Order Items</h3>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">#</th>
+                        <th style="width: 40%;">Product</th>
+                        <th style="width: 15%;" class="text-center">Quantity</th>
+                        <th style="width: 15%;" class="text-right">Unit Price</th>
+                        <th style="width: 20%;" class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>
+                            <strong>{{ item.product.name }}</strong>
+                            {% if item.product.store %}
+                            <br><small style="color: #6c757d;">Store: {{ item.product.store.name }}</small>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-right">${{ item.price|floatformat:2 }}</td>
+                        <td class="text-right"><strong>${{ item.total_price|floatformat:2 }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Totals Section -->
+            <div class="total-section">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span>${{ subtotal|floatformat:2 }}</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax (8%):</span>
+                    <span>${{ tax|floatformat:2 }}</span>
+                </div>
+                <div class="total-row">
+                    <span>Shipping:</span>
+                    <span>FREE</span>
+                </div>
+                <div class="total-row final">
+                    <span>TOTAL AMOUNT:</span>
+                    <span>${{ order.total_amount|floatformat:2 }}</span>
+                </div>
+            </div>
+
+            <!-- Thank You Message -->
+            <div class="thank-you">
+                <h3 style="margin: 0 0 10px 0;">Thank You for Your Order!</h3>
+                <p style="margin: 0;">We appreciate your business and will process your order promptly.</p>
+            </div>
+
+            <!-- Additional Information -->
+            <div style="background: #e9ecef; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                <h4 style="margin-top: 0; color: #495057;">Important Information:</h4>
+                <ul style="margin-bottom: 0; color: #6c757d;">
+                    <li>You will receive updates about your order status via email</li>
+                    <li>For any queries, please contact us with your Order ID</li>
+                    <li>Delivery usually takes 3-7 business days depending on your location</li>
+                    <li>If you have any issues with your order, please contact our support team</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; {{ "now"|date:"Y" }} Himalayan eCommerce. All rights reserved.</p>
+            <p>
+                <a href="http://127.0.0.1:8000/">Visit our website</a> |
+                <a href="http://127.0.0.1:8000/contact/">Contact Support</a> |
+                <a href="http://127.0.0.1:8000/orders/">Track Your Orders</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

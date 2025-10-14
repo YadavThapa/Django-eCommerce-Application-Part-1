@@ -1,0 +1,34 @@
+{% load product_images %}
+{# Minimal checkout template used during runtime checks. The backend already
+	 supports guest checkout (order created with buyer=None and guest_name/email).
+	 Here we show a polite prompt encouraging login but allow proceeding as guest. #}
+
+<h1>Checkout</h1>
+
+{% if not request.user.is_authenticated %}
+	<div style="border:1px solid #ccc;padding:12px;background:#f9f9f9;margin-bottom:12px;">
+		<strong>Proceed as guest or sign in</strong>
+		<p>
+			You can place your order now as a guest, but signing in will save your
+			order history and make future checkouts faster.
+		</p>
+		<p>
+			<a href="/login/">Sign in</a> or continue below to checkout as a guest.
+		</p>
+	</div>
+{% endif %}
+
+<form method="post">
+	{% csrf_token %}
+	<fieldset>
+		<legend>Contact & Shipping</legend>
+		{{ form.as_p }}
+	</fieldset>
+
+	<h3>Order summary</h3>
+	<p>Subtotal: {{ total }}</p>
+	<p>Tax: {{ tax }}</p>
+	<p><strong>Grand total: {{ grand_total }}</strong></p>
+
+	<button type="submit">Place order &amp; send invoice</button>
+</form>

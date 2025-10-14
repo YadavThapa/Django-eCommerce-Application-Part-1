@@ -1,0 +1,28 @@
+{% extends 'shop/base.html' %}
+{% load product_images %}
+
+{% block title %}Template Tag Test{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Product Image Template Tag Test</h1>
+    
+    {% for product in products %}
+    <div class="row mb-4 border-bottom pb-3">
+        <div class="col-md-3">
+            <img src="{% product_image product %}" 
+                 alt="{{ product.name }}" 
+                 class="img-fluid" 
+                 style="width: 200px; height: 150px; object-fit: cover;">
+        </div>
+        <div class="col-md-9">
+            <h5>{{ product.name }}</h5>
+            <p><strong>Store:</strong> {{ product.store.name }}</p>
+            <p><strong>Category:</strong> {{ product.category.name }}</p>
+            <p><strong>Description:</strong> {{ product.description }}</p>
+            <p><strong>Image URL:</strong> <code>{% product_image product %}</code></p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

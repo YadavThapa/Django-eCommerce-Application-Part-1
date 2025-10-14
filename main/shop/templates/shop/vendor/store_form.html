@@ -1,0 +1,326 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Store{% else %}Create New Store{% endif %} - Vendor Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.preview-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+.drag-drop-area {
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.drag-drop-area:hover,
+.drag-drop-area.dragover {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+.form-step {
+    display: none;
+}
+.form-step.active {
+    display: block;
+}
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+.step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+.step.active {
+    background: #007bff;
+    color: white;
+}
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+.step-line {
+    height: 2px;
+    background: #e9ecef;
+    flex: 1;
+    margin-top: 19px;
+}
+.step-line.completed {
+    background: #28a745;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="form-container">
+        <div class="text-center mb-4">
+            <h2><i class="fas fa-store me-2"></i>{% if form.instance.pk %}Edit Store{% else %}Create New Store{% endif %}</h2>
+            <p class="text-muted">{% if form.instance.pk %}Update your store information{% else %}Set up your online store to start selling{% endif %}</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step-line" id="line1"></div>
+            <div class="step" id="step2">2</div>
+            <div class="step-line" id="line2"></div>
+            <div class="step" id="step3">3</div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data" id="storeForm">
+                    {% csrf_token %}
+                    
+                    <!-- Step 1: Basic Information -->
+                    <div class="form-step active" id="formStep1">
+                        <h4 class="mb-3"><i class="fas fa-info-circle me-2"></i>Basic Information</h4>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Store Name *</label>
+                            <input type="text" class="form-control form-control-lg" name="name" id="{{ form.name.id_for_label }}" 
+                                   value="{{ form.name.value|default:'' }}" required placeholder="Enter your store name">
+                            {% if form.name.errors %}
+                                <div class="text-danger mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Store Description *</label>
+                            <textarea class="form-control" name="description" id="{{ form.description.id_for_label }}" 
+                                      rows="4" required placeholder="Describe what your store offers...">{{ form.description.value|default:'' }}</textarea>
+                            <div class="form-text">Tell customers about your store, products, and what makes you unique.</div>
+                            {% if form.description.errors %}
+                                <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+                                Next <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Store Logo -->
+                    <div class="form-step" id="formStep2">
+                        <h4 class="mb-3"><i class="fas fa-image me-2"></i>Store Logo</h4>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Upload Store Logo (Optional)</label>
+                            <div class="drag-drop-area" id="dropArea">
+                                <div class="mb-3">
+                                    <i class="fas fa-cloud-upload-alt text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                                <p class="mb-2">Drag and drop your logo here, or <strong>click to browse</strong></p>
+                                <p class="text-muted small">Supported formats: JPG, PNG, GIF (Max 5MB)</p>
+                                <input type="file" name="logo" id="{{ form.logo.id_for_label }}" 
+                                       class="d-none" accept="image/*">
+                            </div>
+                            {% if form.logo.errors %}
+                                <div class="text-danger mt-1">{{ form.logo.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div id="imagePreview" class="mb-3" style="display: none;">
+                            <label class="form-label">Preview:</label>
+                            <div>
+                                <img id="previewImg" class="preview-image border">
+                            </div>
+                        </div>
+
+                        {% if form.instance.logo %}
+                        <div class="mb-3">
+                            <label class="form-label">Current Logo:</label>
+                            <div>
+                                <img src="{{ form.instance.logo.url }}" class="preview-image border">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary" onclick="prevStep(1)">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="nextStep(3)">
+                                Next <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review & Submit -->
+                    <div class="form-step" id="formStep3">
+                        <h4 class="mb-3"><i class="fas fa-check-circle me-2"></i>Review & Submit</h4>
+                        
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Store Summary</h5>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <p><strong>Name:</strong> <span id="reviewName">-</span></p>
+                                        <p><strong>Description:</strong> <span id="reviewDescription">-</span></p>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div id="reviewLogo">
+                                            <i class="fas fa-store text-muted" style="font-size: 3rem;"></i>
+                                            <p class="small text-muted">No logo uploaded</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save me-2"></i>{% if form.instance.pk %}Update Store{% else %}Create Store{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentStep = 1;
+
+function nextStep(step) {
+    if (validateCurrentStep()) {
+        showStep(step);
+        updateReview();
+    }
+}
+
+function prevStep(step) {
+    showStep(step);
+}
+
+function showStep(step) {
+    // Hide all steps
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active', 'completed'));
+    document.querySelectorAll('.step-line').forEach(s => s.classList.remove('completed'));
+    
+    // Show current step
+    document.getElementById(`formStep${step}`).classList.add('active');
+    document.getElementById(`step${step}`).classList.add('active');
+    
+    // Mark previous steps as completed
+    for (let i = 1; i < step; i++) {
+        document.getElementById(`step${i}`).classList.add('completed');
+        if (i < 3) {
+            document.getElementById(`line${i}`).classList.add('completed');
+        }
+    }
+    
+    currentStep = step;
+}
+
+function validateCurrentStep() {
+    if (currentStep === 1) {
+        const name = document.querySelector('input[name="name"]').value.trim();
+        const description = document.querySelector('textarea[name="description"]').value.trim();
+        
+        if (!name) {
+            alert('Please enter a store name');
+            return false;
+        }
+        if (!description) {
+            alert('Please enter a store description');
+            return false;
+        }
+    }
+    return true;
+}
+
+function updateReview() {
+    const name = document.querySelector('input[name="name"]').value || '-';
+    const description = document.querySelector('textarea[name="description"]').value || '-';
+    
+    document.getElementById('reviewName').textContent = name;
+    document.getElementById('reviewDescription').textContent = description.length > 100 ? 
+        description.substring(0, 100) + '...' : description;
+    
+    // Update logo preview in review
+    const previewImg = document.getElementById('previewImg');
+    const reviewLogo = document.getElementById('reviewLogo');
+    
+    if (previewImg && previewImg.src) {
+        reviewLogo.innerHTML = `<img src="${previewImg.src}" class="preview-image">`;
+    }
+}
+
+// File upload handling
+document.addEventListener('DOMContentLoaded', function() {
+    const dropArea = document.getElementById('dropArea');
+    const fileInput = document.getElementById('{{ form.logo.id_for_label }}');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+
+    dropArea.addEventListener('click', () => fileInput.click());
+    
+    dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.classList.add('dragover');
+    });
+    
+    dropArea.addEventListener('dragleave', () => {
+        dropArea.classList.remove('dragover');
+    });
+    
+    dropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    function handleFileSelect(file) {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+});
+</script>
+{% endblock %}

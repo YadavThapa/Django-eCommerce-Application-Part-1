@@ -1,0 +1,16 @@
+{% load product_images %}
+<!doctype html>
+<html>
+  <head>
+    <title>Customer Dashboard (fallback)</title>
+  </head>
+  <body>
+    <h1>Customer Dashboard</h1>
+    <p>This is a minimal fallback template added to keep integration tests running.</p>
+    {% if user.is_authenticated %}
+      <p>Welcome, {{ user.username }}.</p>
+    {% else %}
+      <p>Please log in.</p>
+    {% endif %}
+  </body>
+</html>

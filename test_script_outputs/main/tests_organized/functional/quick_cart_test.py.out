@@ -1,0 +1,17 @@
+--- RUN: main\tests_organized\functional\quick_cart_test.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\functional\quick_cart_test.py"
+--- OUTPUT ---
+=== QUICK CART TEST ===
+✅ User: demo_buyer
+✅ Product: Premium Cotton T-Shirt (Stock: 91)
+✅ Cart: Found existing
+📊 Initial cart items: 1
+✅ Updated existing item quantity to: 15
+📊 Final cart items: 1
+
+📦 Cart Contents:
+  - Premium Cotton T-Shirt: 15 x $24.99
+
+💰 Total: $374.85
+
+--- EXIT CODE: 0

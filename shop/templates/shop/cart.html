@@ -1,0 +1,24 @@
+{# Minimal fallback cart template used during runtime checks #}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cart</title>
+  </head>
+  <body>
+    <h1>Your Cart (Fallback)</h1>
+    {% if cart_items %}
+      <ul>
+      {% for item in cart_items %}
+        <li>{{ item.product.name }} — qty: {{ item.quantity }}</li>
+      {% endfor %}
+      </ul>
+      <p>Total: {{ total }}</p>
+    {% else %}
+      <p>Your cart is empty.</p>
+    {% endif %}
+    {% if cart_items %}
+      <p><a href="/checkout/">Proceed to Checkout</a></p>
+    {% endif %}
+  </body>
+</html>

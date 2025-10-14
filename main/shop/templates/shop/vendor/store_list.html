@@ -1,0 +1,145 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}My Stores - Vendor Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.store-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.store-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+.store-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.status-badge {
+    font-size: 0.75rem;
+}
+.action-buttons .btn {
+    margin: 0 2px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-store me-2"></i>My Stores</h2>
+            <p class="text-muted">Manage your online stores and track performance</p>
+        </div>
+        <a href="{% url 'shop:store_create' %}" class="btn btn-primary btn-lg mt-2 mt-md-0">
+            <i class="fas fa-plus me-2"></i>Create New Store
+        </a>
+    </div>
+
+    {% if stores %}
+    <div class="row">
+        {% for store in stores %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card store-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if store.logo %}
+                            <img src="{{ store.logo.url }}" alt="{{ store.name }}" class="store-logo me-3">
+                        {% else %}
+                            <div class="store-logo me-3 bg-primary d-flex align-items-center justify-content-center">
+                                <i class="fas fa-store text-white"></i>
+                            </div>
+                        {% endif %}
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1">{{ store.name }}</h5>
+                            <span class="badge {% if store.is_active %}bg-success{% else %}bg-secondary{% endif %} status-badge">
+                                {% if store.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <p class="card-text mb-3">{{ store.description|truncatewords:15 }}</p>
+                    
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h6 class="text-primary mb-0">0</h6>
+                                <small class="text-muted">Products</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-success mb-0">$0.00</h6>
+                            <small class="text-muted">Sales</small>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons d-flex justify-content-center">
+                        <a href="{% url 'shop:store_detail' store.pk %}" class="btn btn-outline-primary btn-sm" title="View Store">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'shop:store_update' store.pk %}" class="btn btn-outline-secondary btn-sm" title="Edit Store">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'shop:product_create' store.pk %}" class="btn btn-outline-success btn-sm" title="Add Product">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm" title="Delete Store" onclick="confirmDelete({{ store.pk }}, '{{ store.name }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-muted small">
+                    <i class="fas fa-calendar me-1"></i>Created: {{ store.created_at|date:"M d, Y" }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-store text-muted" style="font-size: 4rem;"></i>
+        </div>
+        <h4 class="text-muted mb-3">No Stores Yet</h4>
+        <p class="text-muted mb-4">Create your first store to start selling products online!</p>
+        <a href="{% url 'shop:store_create' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus me-2"></i>Create Your First Store
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Store</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the store "<span id="storeName"></span>"?</p>
+                <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone and will also delete all products in this store.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="deleteLink" class="btn btn-danger">Delete Store</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete(storeId, storeName) {
+    document.getElementById('storeName').textContent = storeName;
+    document.getElementById('deleteLink').href = `/vendor/stores/${storeId}/delete/`;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}

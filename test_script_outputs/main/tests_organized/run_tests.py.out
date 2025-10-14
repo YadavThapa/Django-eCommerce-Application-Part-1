@@ -1,0 +1,22 @@
+--- RUN: main\tests_organized\run_tests.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\run_tests.py"
+--- OUTPUT ---
+
+Test Runner Usage:
+==================
+python run_tests.py [category]
+
+Categories:
+    functional   - Run functional tests (auth, checkout, etc.)
+    unit         - Run unit tests
+    integration  - Run integration tests
+    utilities    - Run utility/debug scripts
+    data_setup   - Run data setup scripts
+    all          - Run all test categories
+
+Examples:
+    python run_tests.py functional
+    python run_tests.py all
+
+
+--- EXIT CODE: 0

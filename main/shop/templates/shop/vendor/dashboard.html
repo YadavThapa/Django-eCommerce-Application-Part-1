@@ -1,0 +1,312 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Vendor Dashboar                        <div class="col-6 col-md-3">
+            <div class="card bg-info text-white h-100 shadow-sm stats-card dashboard-card" onclick="location.href='{% url 'shop:vendor_products' %}'">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-box fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_products|default:0 }}</h4>
+                    <p class="mb-0 small">Total Products</p>
+                </div>
+            </div>
+        </div>ayan eCommerce - Shop Better with Us{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+.stats-card {
+    transition: all 0.2s ease;
+}
+.stats-card:hover {
+    transform: scale(1.05);
+}
+.btn {
+    transition: all 0.2s ease;
+}
+.btn:hover {
+    transform: translateY(-1px);
+}
+@media (max-width: 768px) {
+    .dashboard-card:hover {
+        transform: none;
+    }
+    .stats-card:hover {
+        transform: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Vendor Dashboard</h2>
+        <a href="{% url 'shop:store_create' %}" class="btn btn-primary btn-lg mt-2 mt-md-0" role="button">
+            <i class="fas fa-plus me-2"></i>Create New Store
+        </a>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4 g-3">
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white h-100 shadow-sm stats-card dashboard-card" onclick="location.href='{% url 'shop:store_list' %}'">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-store fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ stores.count }}</h4>
+                    <p class="mb-0 small">Active Stores</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-success text-white h-100 shadow-sm stats-card dashboard-card" onclick="showSalesBreakdown()">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                    <h4 class="mb-1">${{ total_sales|floatformat:2 }}</h4>
+                    <p class="mb-0 small">Total Sales</p>
+                    {% if total_sales > 0 %}
+                        <small class="mt-1 opacity-75">
+                            <i class="fas fa-chart-line me-1"></i>Click for details
+                        </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-info text-white h-100 shadow-sm stats-card dashboard-card" onclick="location.href='{% url 'shop:vendor_products' %}'">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-box fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_products|default:0 }}</h4>
+                    <p class="mb-0 small">Total Products</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-warning text-white h-100 shadow-sm stats-card dashboard-card" onclick="scrollToOrders()">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ recent_orders.count }}</h4>
+                    <p class="mb-0 small">Recent Orders</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- My Stores -->
+        <div class="col-md-6">
+            <div class="card dashboard-card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <h5 class="mb-0"><i class="fas fa-store me-2"></i>My Stores</h5>
+                    <a href="{% url 'shop:store_list' %}" class="btn btn-sm btn-outline-primary" role="button">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if stores %}
+                        {% for store in stores|slice:":5" %}
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-bottom py-3">
+                            <div class="mb-2 mb-sm-0">
+                                <strong>{{ store.name }}</strong><br>
+                                <small class="text-muted">{{ store.products.count }} product{{ store.products.count|pluralize }}</small>
+                            </div>
+                            <div class="btn-group" role="group">
+                                {% if store and store.is_active %}
+                                    <a href="{% url 'shop:store_detail' store.pk %}" class="btn btn-sm btn-outline-primary" role="button">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                    <a href="{% url 'shop:store_update' store.pk %}" class="btn btn-sm btn-outline-secondary" role="button">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                {% else %}
+                                    <span class="btn btn-sm btn-outline-secondary disabled">Unavailable</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-store fa-3x text-muted mb-3"></i>
+                            <p class="text-muted mb-3">No stores created yet.</p>
+                            <a href="{% url 'shop:store_create' %}" class="btn btn-primary btn-lg" role="button">
+                                <i class="fas fa-plus me-2"></i>Create Your First Store
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Orders -->
+        <div class="col-md-6">
+            <div class="card dashboard-card shadow-sm" id="recent-orders-section">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list-alt me-2"></i>Recent Orders</h5>
+                    {% if recent_orders %}
+                        <span class="badge bg-primary">{{ recent_orders.count }} total</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if recent_orders %}
+                        {% for order_item in recent_orders|slice:":5" %}
+                        <div class="order-item-card border rounded p-3 mb-3" style="background: #f8f9fa;">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 text-primary">{{ order_item.product.name }}</h6>
+                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                        <span class="badge bg-secondary">{{ order_item.order.order_id }}</span>
+                                        <span class="badge bg-info">Qty: {{ order_item.quantity }}</span>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i>{{ order_item.order.buyer.username }}
+                                        <i class="fas fa-calendar ms-2 me-1"></i>{{ order_item.order.created_at|date:"M d, Y H:i" }}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <h6 class="mb-1 text-success">${{ order_item.total_price|floatformat:2 }}</h6>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Completed
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if recent_orders.count > 5 %}
+                            <div class="text-center">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadMoreOrders()">
+                                    <i class="fas fa-plus me-1"></i>Show More Orders
+                                </button>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No orders yet</h6>
+                            <p class="text-muted small">Orders will appear here when customers purchase your products</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Scroll to Recent Orders section
+function scrollToOrders() {
+    const ordersSection = document.getElementById('recent-orders-section');
+    if (ordersSection) {
+        ordersSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center'
+        });
+        
+        // Add highlight effect
+        ordersSection.style.boxShadow = '0 0 20px rgba(255, 193, 7, 0.5)';
+        setTimeout(() => {
+            ordersSection.style.boxShadow = '0 5px 20px rgba(0,0,0,0.1)';
+        }, 2000);
+    }
+}
+
+// Load more orders function (placeholder)
+function loadMoreOrders() {
+    alert('This would load more orders via AJAX in a production system');
+}
+
+// Show sales breakdown
+function showSalesBreakdown() {
+    {% if total_sales > 0 %}
+        const breakdown = `
+Sales Breakdown:
+💰 Total Revenue: ${{ total_sales|floatformat:2 }}
+📦 Orders Processed: {{ recent_orders.count }}
+🏪 Active Stores: {{ stores.count }}
+📈 Products Sold: {{ recent_orders.count }} items
+
+This would show detailed analytics in a production system!
+        `;
+        alert(breakdown);
+    {% else %}
+        alert('No sales data available yet. Start selling products to see your sales breakdown!');
+    {% endif %}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add loading state to buttons
+    const buttons = document.querySelectorAll('.btn:not(.disabled)');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Skip for certain buttons
+            if (this.onclick || this.getAttribute('onclick')) {
+                return;
+            }
+            
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+            this.classList.add('disabled');
+            
+            // Re-enable button after navigation (fallback)
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('disabled');
+            }, 3000);
+        });
+    });
+
+    // Add click feedback to stats cards
+    const statsCards = document.querySelectorAll('.stats-card');
+    statsCards.forEach(card => {
+        card.addEventListener('click', function() {
+            this.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    });
+
+    // Add hover effects to order items
+    const orderItems = document.querySelectorAll('.order-item-card');
+    orderItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.boxShadow = '';
+            this.style.transform = '';
+        });
+    });
+
+    // Auto-refresh dashboard stats every 30 seconds
+    setInterval(function() {
+        // This would make an AJAX call to refresh stats in production
+        console.log('Dashboard stats refresh would happen here');
+    }, 30000);
+
+    // Initialize tooltips if Bootstrap is available
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+    
+    // Show welcome message for new vendors
+    {% if not recent_orders and stores.count == 0 %}
+        setTimeout(function() {
+            if (confirm('Welcome to your vendor dashboard! Would you like to create your first store?')) {
+                window.location.href = '{% url "shop:store_create" %}';
+            }
+        }, 1000);
+    {% endif %}
+});
+</script>
+{% endblock %}

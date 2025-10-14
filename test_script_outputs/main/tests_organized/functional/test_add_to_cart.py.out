@@ -1,0 +1,40 @@
+--- RUN: main\tests_organized\functional\test_add_to_cart.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\functional\test_add_to_cart.py"
+--- OUTPUT ---
+
+🔍 CHECKING ADD TO CART VIEW IMPLEMENTATION
+--------------------------------------------------
+✅ add_to_cart view exists
+✅ add_to_cart URL pattern exists: cart/add/<int:product_id>/
+
+🔧 DIAGNOSING ADD TO CART ISSUES
+--------------------------------------------------
+Add to cart view source preview:
+def add_to_cart(request, product_id):
+    """Add product to session cart - works for anonymous users"""
+    # Use module-level SessionCart to avoid import inside function
+    session_cart = SessionCart(request)
+    product = get_object_or_404(Product, pk=product_id)
+    if request.method == "POST":
+...
+❌ No permission decorators found - this might be an issue
+🛒 TESTING ADD TO CART FUNCTIONALITY
+==================================================
+1. Logging in as buyer...
+   Login status: 302 ✅
+2. Checking available products...
+   Available products: 3
+   - Premium Cotton T-Shirt (ID: 27) - $24.99 - Stock: 91
+   - Smart Fitness Watch (ID: 26) - $199.99 - Stock: 17
+   - Wireless Bluetooth Headphones (ID: 25) - $89.99 - Stock: 44
+3. Checking initial cart state...
+   Initial cart items: 1
+4. Testing add to cart for: Premium Cotton T-Shirt (ID: 27)
+   URL: /cart/add/27/
+   Add to cart response: 303
+   ❌ Add to cart failed: 303
+   Response content: b''
+
+❌ ADD TO CART FUNCTIONALITY TEST FAILED
+
+--- EXIT CODE: 0

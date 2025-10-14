@@ -1,0 +1,18 @@
+[MASTER]
+# Add project root and `main` to sys.path so pylint can resolve local imports
+# Also set DJANGO_SETTINGS_MODULE so pylint-django can load Django settings
+init-hook="import sys, os, pathlib; p=pathlib.Path(__file__).resolve().parent; sys.path.insert(0, str(p)); sys.path.insert(0, str(p / 'main')); os.environ.setdefault('DJANGO_SETTINGS_MODULE','main.ecommerce_project.settings')"
+
+# Load the pylint_django plugin to improve Django-specific analysis
+load-plugins=pylint_django
+
+# Disable refactor and convention checks by default; we still allow import
+# related messages to surface if they indicate real issues.
+disable=C,R
+
+[MESSAGES CONTROL]
+# Enable error-level messages so genuine import problems are reported.
+enable=E
+
+[REPORTS]
+score=no

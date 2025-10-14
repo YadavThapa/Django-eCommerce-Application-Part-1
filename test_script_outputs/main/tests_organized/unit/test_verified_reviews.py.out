@@ -1,0 +1,94 @@
+--- RUN: main\tests_organized\unit\test_verified_reviews.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\unit\test_verified_reviews.py"
+--- OUTPUT ---
+🔍 VERIFIED REVIEW SYSTEM - COMPREHENSIVE TEST
+============================================================
+
+📦 PRODUCT: Football (ID: 24)
+    🌐 URL: http://127.0.0.1:8000/products/24/
+    💰 Price: $23.00
+    🏪 Store: ABC
+    📊 Review Summary:
+       Total Reviews: 2
+       ✅ Verified: 1
+       ⚠️  Unverified: 1
+    📝 Recent Reviews:
+       testbuyer: 5⭐ [✅ VERIFIED]
+       Comment: "Amazing football! I actually purchased this and it arrived q..."
+       Purchase Status: ✅ Has purchased
+       Date: 2025-10-06 00:32
+
+       browser: 3⭐ [⚠️ UNVERIFIED]
+       Comment: "This Football looks interesting based on the description and..."
+       Purchase Status: ❌ No purchase
+       Date: 2025-10-06 00:32
+
+
+📦 PRODUCT: T-shirt (ID: 22)
+    🌐 URL: http://127.0.0.1:8000/products/22/
+    💰 Price: $40.00
+    🏪 Store: ABC
+    📊 Review Summary:
+       Total Reviews: 1
+       ✅ Verified: 0
+       ⚠️  Unverified: 1
+    📝 Recent Reviews:
+       browser: 4⭐ [⚠️ UNVERIFIED]
+       Comment: "This T-shirt looks interesting based on the description and ..."
+       Purchase Status: ❌ No purchase
+       Date: 2025-10-06 00:32
+
+
+📦 PRODUCT: Running Shoes (ID: 21)
+    🌐 URL: http://127.0.0.1:8000/products/21/
+    💰 Price: $99.99
+    🏪 Store: Sports Central
+    📊 Review Summary:
+       Total Reviews: 1
+       ✅ Verified: 0
+       ⚠️  Unverified: 1
+    📝 Recent Reviews:
+       browser: 5⭐ [⚠️ UNVERIFIED]
+       Comment: "This Running Shoes looks interesting based on the descriptio..."
+       Purchase Status: ❌ No purchase
+       Date: 2025-10-06 00:32
+
+
+🧪 VERIFICATION LOGIC TEST:
+==============================
+👤 Test Buyer: yadavthapa
+🛒 Products purchased by yadavthapa:
+   📦 Premium Cotton T-Shirt
+      Review: None (eligible for verified review)
+   📦 Smart Fitness Watch
+      Review: None (eligible for verified review)
+   📦 Wireless Bluetooth Headphones
+      Review: None (eligible for verified review)
+   📦 Running Shoes
+      Review: None (eligible for verified review)
+
+👁️  Test Browser: vendor1
+📝 Reviews by vendor1:
+
+🎯 SYSTEM FEATURES IMPLEMENTED:
+===================================
+    ✅ Automatic verification based on purchase history
+    ✅ Visual distinction between verified and unverified reviews
+    ✅ Verified purchase badges on reviews
+    ✅ Different success messages for verified vs unverified
+    ✅ Review statistics showing verification counts
+    ✅ Enhanced review form with verification status
+    ✅ Color-coded review cards (green=verified, yellow=unverified)
+    ✅ Purchase status indicators
+    ✅ Comprehensive review display system
+
+📱 TESTING INSTRUCTIONS:
+=========================
+1. Login as 'testbuyer' (has purchases) and add a review
+2. Login as 'browser' (no purchases) and add a review
+3. Compare the verification badges and messages
+4. Check product pages to see verified vs unverified reviews
+
+✅ VERIFIED REVIEW SYSTEM FULLY OPERATIONAL!
+
+--- EXIT CODE: 0

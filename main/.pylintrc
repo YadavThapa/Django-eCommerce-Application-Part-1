@@ -1,0 +1,10 @@
+[MASTER]
+ignore=archived,legacy_root_files
+ignore-patterns=test_.*\.py
+
+[MESSAGES CONTROL]
+# disable a few noisy messages for archived test snapshots
+disable=C0114,C0115,C0116,missing-final-newline
+
+[FORMAT]
+max-line-length=88

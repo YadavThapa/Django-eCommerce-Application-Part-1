@@ -1,0 +1,24 @@
+{% extends 'shop/base.html' %}
+{% load product_images %}
+
+{% block title %}Products - Himalayan eCommerce{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>Products</h2>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <img src="{% product_image product 'list' %}" class="card-img-top product-img" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description|truncatechars:80 }}</p>
+                    <a href="{% url 'shop:product_detail' product.pk %}" class="btn btn-primary">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

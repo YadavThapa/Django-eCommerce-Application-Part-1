@@ -1,0 +1,332 @@
+{% extends 'shop/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register - Himalayan eCommerce - Shop Better with Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-hero {
+        background: url('https://www.wondersofnepal.com/wp-content/uploads/2019/11/nepal-pokhara-9.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .register-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        z-index: 1;
+    }
+    
+    .register-hero .content-overlay {
+        position: relative;
+        z-index: 2;
+    }
+    
+    @keyframes float {
+        0% { transform: translateY(0px) rotate(0deg); }
+        100% { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    .feature-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+    }
+    .feature-card.selected {
+        box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+        transform: translateY(-6px) scale(1.02);
+        outline: 3px solid rgba(102,126,234,0.18);
+    }
+    /* Make the role select visually hidden only for very large screens if desired.
+       Show the select on desktop as requested so users who prefer native controls can see it. */
+    select[name="role"] {
+        position: static !important;
+        left: auto !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        display: inline-block;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+        max-width: 240px;
+    }
+    /* Mobile responsiveness: stack cards, increase tap targets, show select for small screens */
+    @media (max-width: 576px) {
+        .feature-card {
+            padding: 1.25rem !important;
+            cursor: pointer;
+            width: 100%;
+            display: block;
+        }
+        .feature-card .mb-3 i { font-size: 2rem !important; }
+        /* Reveal the role select as a fallback on small screens */
+        select[name="role"] {
+            position: static !important;
+            left: auto !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin-top: 0.75rem;
+        }
+        .feature-card .selected-badge { display: inline-block; }
+    }
+
+    .selected-badge {
+        display: none;
+        font-size: 0.85rem;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(102,126,234,0.12);
+        color: #2a2a2a;
+        margin-left: 8px;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #764ba2, #667eea);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .animated-icon {
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+    
+    .trust-indicator {
+        transition: all 0.3s ease;
+    }
+    
+    .trust-indicator:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Hero Section with Background Image -->
+            <div class="card border-0 shadow-lg overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left side with image -->
+                    <div class="col-md-5 d-none d-md-block position-relative">
+                        <div class="h-100 d-flex align-items-center justify-content-center register-hero" 
+                             style="min-height: 600px;">
+                            <div class="text-center text-white p-4 content-overlay">
+                                <div class="mb-4">
+                                    <i class="fas fa-shopping-cart animated-icon" 
+                                       style="font-size: 4rem; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);"></i>
+                                </div>
+                                <h4 class="fw-bold mb-3" style="text-shadow: 4px 4px 8px rgba(0,0,0,1), 2px 2px 4px rgba(0,0,0,0.8); font-size: 2rem; color: #ffffff; background: rgba(0, 0, 0, 0.4); padding: 12px 20px; border-radius: 8px; display: inline-block;">
+                                    Join Our Marketplace
+                                </h4>
+                                <p class="mb-4" style="text-shadow: 3px 3px 6px rgba(0,0,0,1), 1px 1px 3px rgba(0,0,0,0.8); font-size: 1.1rem; font-weight: 500; color: #ffffff; background: rgba(0, 0, 0, 0.3); padding: 8px 15px; border-radius: 6px; display: inline-block;">
+                                    Start your shopping journey or become a vendor today!
+                                </p>
+                                <div class="row text-center" style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                    <div class="col-6">
+                                        <div class="mb-2">
+                                            <i class="fas fa-users" style="font-size: 1.5rem; color: #fff; text-shadow: 3px 3px 6px rgba(0,0,0,0.9);"></i>
+                                        </div>
+                                        <small style="text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 1px 1px 2px rgba(0,0,0,0.7); font-weight: 600; color: #ffffff;">10k+ Users</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-2">
+                                            <i class="fas fa-star" style="font-size: 1.5rem; color: #ffd700; text-shadow: 3px 3px 6px rgba(0,0,0,0.9);"></i>
+                                        </div>
+                                        <small style="text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 1px 1px 2px rgba(0,0,0,0.7); font-weight: 600; color: #ffffff;">4.9 Rating</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Decorative elements -->
+                                <div class="position-absolute top-0 start-0 p-3">
+                                    <i class="fas fa-star text-warning" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8); opacity: 0.8;"></i>
+                                </div>
+                                <div class="position-absolute top-0 end-0 p-3">
+                                    <i class="fas fa-heart text-danger" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8); opacity: 0.8;"></i>
+                                </div>
+                                <div class="position-absolute bottom-0 start-0 p-3">
+                                    <i class="fas fa-gift text-success" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8); opacity: 0.8;"></i>
+                                </div>
+                                <div class="position-absolute bottom-0 end-0 p-3">
+                                    <i class="fas fa-tag text-info" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8); opacity: 0.8;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right side with form -->
+                    <div class="col-md-7">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-plus text-primary" style="font-size: 2.5rem;"></i>
+                                </div>
+                                <h3 class="fw-bold text-dark">Create Account</h3>
+                                <p class="text-muted">Join thousands of happy customers</p>
+                            </div>
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ form|crispy }}
+                                
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                                        <i class="fas fa-user-plus me-2"></i>Create Account
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <hr class="my-4">
+                            <div class="text-center">
+                                <p class="mb-0">Already have an account? 
+                                    <a href="{% url 'shop:login' %}" class="text-decoration-none fw-bold">
+                                        <i class="fas fa-sign-in-alt me-1"></i>Login here
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Role Information with Enhanced Design -->
+            <div class="card mt-4 border-0 shadow">
+                <div class="card-header bg-gradient text-white text-center" 
+                     style="background: linear-gradient(45deg, #667eea, #764ba2);">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Choose Your Journey</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-card text-center p-3 rounded" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);" data-role="buyer" tabindex="0" role="button" aria-pressed="false">
+                                <div class="mb-3">
+                                    <i class="fas fa-shopping-bag text-primary" style="font-size: 2.5rem;"></i>
+                                </div>
+                                <h6 class="text-primary fw-bold mb-3">🛍️ Buyer Account <span class="selected-badge">Selected</span></h6>
+                                <ul class="list-unstyled small">
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Browse thousands of products</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Add items to cart</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Secure checkout & payments</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Leave product reviews</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Track your orders</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-card text-center p-3 rounded" style="background: linear-gradient(135deg, #e8f5e8, #c8e6c9);" data-role="vendor" tabindex="0" role="button" aria-pressed="false">
+                                <div class="mb-3">
+                                    <i class="fas fa-store text-success" style="font-size: 2.5rem;"></i>
+                                </div>
+                                <h6 class="text-success fw-bold mb-3">🏪 Vendor Account <span class="selected-badge">Selected</span></h6>
+                                <ul class="list-unstyled small">
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Create your online store</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Manage product inventory</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>View sales analytics</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Process customer orders</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Grow your business</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trust indicators -->
+                    <div class="row mt-4 text-center">
+                        <div class="col-4">
+                            <div class="trust-indicator">
+                                <div class="mb-2">
+                                    <i class="fas fa-shield-alt text-success" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <small class="text-muted fw-bold">Secure & Safe</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="trust-indicator">
+                                <div class="mb-2">
+                                    <i class="fas fa-headset text-primary" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <small class="text-muted fw-bold">24/7 Support</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="trust-indicator">
+                                <div class="mb-2">
+                                    <i class="fas fa-rocket text-warning" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <small class="text-muted fw-bold">Fast Delivery</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+            (function(){
+                // Find the role select created by the form
+                var roleSelect = document.querySelector('select[name="role"]');
+                // If the select doesn't exist, nothing to do
+                if (!roleSelect) return;
+
+                // Utility: set selected option value
+                function setRoleValue(val) {
+                    roleSelect.value = val;
+                    // Update aria-pressed on cards
+                    cards.forEach(function(c){
+                        var is = c.getAttribute('data-role') === val;
+                        c.classList.toggle('selected', is);
+                        c.setAttribute('aria-pressed', is ? 'true' : 'false');
+                    });
+                }
+
+                var cards = Array.prototype.slice.call(document.querySelectorAll('.feature-card[data-role]'));
+                if (!cards.length) return;
+
+                // Default to the currently selected select value, or 'buyer'
+                var initial = roleSelect.value || roleSelect.options[0] && roleSelect.options[0].value || 'buyer';
+                setRoleValue(initial);
+
+                cards.forEach(function(card){
+                    function activateCard(){
+                        var role = card.getAttribute('data-role');
+                        setRoleValue(role);
+                    }
+                    // Click and touch handlers
+                    card.addEventListener('click', activateCard, {passive: true});
+                    card.addEventListener('touchstart', function(ev){ ev.preventDefault(); activateCard(); }, {passive: false});
+                    // Keyboard activation
+                    card.addEventListener('keydown', function(ev){
+                        if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+                            ev.preventDefault();
+                            activateCard();
+                        }
+                    });
+                });
+            })();
+            </script>
+        </div>
+    </div>
+</div>
+{% endblock %}
