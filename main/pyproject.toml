@@ -1,0 +1,3 @@
+[tool.ruff]
+line-length = 79
+exclude = ["legacy_root_files", "archived", "tests/legacy", "tests_organized"]

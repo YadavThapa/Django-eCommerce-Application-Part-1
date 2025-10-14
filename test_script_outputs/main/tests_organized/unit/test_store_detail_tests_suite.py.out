@@ -1,0 +1,95 @@
+--- RUN: main\tests_organized\unit\test_store_detail_tests_suite.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\unit\test_store_detail_tests_suite.py"
+--- OUTPUT ---
+🏪 Testing Store Detail Page Functionality
+==================================================
+
+📊 Store: Tech Haven (ID: 1)
+   👤 Vendor: vendor1
+   🌐 URL: http://127.0.0.1:8000/stores/1/
+   📦 Products: 6
+   📋 Sample products:
+      • Web Development Handbook - $39.99
+        Stock: 150
+      • Data Science for Beginners - $45.99
+        Stock: 180
+      • Python Programming Guide - $49.99
+        Stock: 200
+
+📊 Store: Fashion World (ID: 2)
+   👤 Vendor: vendor2
+   🌐 URL: http://127.0.0.1:8000/stores/2/
+   📦 Products: 3
+   📋 Sample products:
+      • Sneakers - $89.99
+        Stock: 150
+      • Jeans - $59.99
+        Stock: 300
+      • T-Shirt - $29.99
+        Stock: 500
+
+📊 Store: Sports Central (ID: 3)
+   👤 Vendor: vendor3
+   🌐 URL: http://127.0.0.1:8000/stores/3/
+   📦 Products: 6
+   📋 Sample products:
+      • Running Shoes - $99.99
+        Stock: 147
+      • Dumbbells Set - $149.99
+        Stock: 59
+      • Yoga Mat - $29.99
+        Stock: 500
+
+📊 Store: Samrat (ID: 4)
+   👤 Vendor: fishtail
+   🌐 URL: http://127.0.0.1:8000/stores/4/
+   📦 Products: 0
+   ⚠️  No products in this store
+
+📊 Store: ABC (ID: 5)
+   👤 Vendor: fishtail
+   🌐 URL: http://127.0.0.1:8000/stores/5/
+   📦 Products: 2
+   📋 Sample products:
+      • Football - $23.00
+        Stock: 3999
+      • T-shirt - $40.00
+        Stock: 397
+
+📊 Store: Test Store (ID: 7)
+   👤 Vendor: test_vendor
+   🌐 URL: http://127.0.0.1:8000/stores/7/
+   📦 Products: 0
+   ⚠️  No products in this store
+
+📊 Store: Demo Electronics Store (ID: 8)
+   👤 Vendor: demo_vendor
+   🌐 URL: http://127.0.0.1:8000/stores/8/
+   📦 Products: 3
+   📋 Sample products:
+      • Premium Cotton T-Shirt - $24.99
+        Stock: 91
+      • Smart Fitness Watch - $199.99
+        Stock: 17
+      • Wireless Bluetooth Headphones - $89.99
+        Stock: 44
+
+📊 Store: Home Essentials (ID: 9)
+   👤 Vendor: vendor3
+   🌐 URL: http://127.0.0.1:8000/stores/9/
+   📦 Products: 6
+   📋 Sample products:
+      • Cooking Masterclass - $42.99
+        Stock: 100
+      • History of Nepal - $35.99
+        Stock: 120
+      • The Great Novel Collection - $29.99
+        Stock: 250
+
+✅ Store Detail Template Created:
+   📄 Location: shop/templates/shop/store_detail.html
+   🎨 Features: Store info, product grid, pagination, add to cart
+   📱 Responsive: Bootstrap 5 design
+   🔧 Status: Ready to use!
+
+--- EXIT CODE: 0

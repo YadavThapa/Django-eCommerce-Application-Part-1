@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 400 240">
+  <rect width="400" height="240" fill="#f3f4f6"/>
+  <g fill="#6b7280">
+    <rect x="40" y="40" width="320" height="160" rx="8" fill="#ffffff"/>
+    <text x="200" y="130" font-size="18" text-anchor="middle" fill="#9ca3af">Image not available</text>
+  </g>
+</svg>

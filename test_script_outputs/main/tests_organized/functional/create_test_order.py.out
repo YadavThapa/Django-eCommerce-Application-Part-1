@@ -1,0 +1,6 @@
+--- RUN: main\tests_organized\functional\create_test_order.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\functional\create_test_order.py"
+--- OUTPUT ---
+Created order Order ORD-3B2F7211
+
+--- EXIT CODE: 0

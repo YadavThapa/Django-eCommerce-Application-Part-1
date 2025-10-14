@@ -1,0 +1,20 @@
+{% load product_images %}
+<!doctype html>
+<html>
+  <head>
+    <title>Order History (fallback)</title>
+  </head>
+  <body>
+    <h1>Order History</h1>
+    <p>This is a minimal fallback template used during integration testing.</p>
+    {% if orders %}
+      <ul>
+        {% for order in orders %}
+          <li>Order #{{ order.id }} - {{ order.total }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No orders yet.</p>
+    {% endif %}
+  </body>
+</html>

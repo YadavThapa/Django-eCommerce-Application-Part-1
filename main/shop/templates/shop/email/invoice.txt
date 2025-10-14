@@ -1,0 +1,67 @@
+================================================================================
+                        HIMALAYAN eCOMMERCE INVOICE
+                         Shop Better with Us
+================================================================================
+
+INVOICE: {{ order.order_id }}
+Date: {{ order.created_at|date:"F d, Y g:i A" }}
+
+================================================================================
+ORDER INFORMATION
+================================================================================
+Order ID:         {{ order.order_id }}
+Order Date:       {{ order.created_at|date:"F d, Y" }}
+Order Time:       {{ order.created_at|time:"g:i A" }}
+Status:           {{ order.get_status_display }}
+Payment Method:   {{ order.payment_method|default:"Cash on Delivery" }}
+
+================================================================================
+CUSTOMER INFORMATION
+================================================================================
+Name:             {{ order.buyer.get_full_name|default:order.buyer.username }}
+Email:            {{ order.buyer.email }}
+Username:         {{ order.buyer.username }}
+
+================================================================================
+SHIPPING ADDRESS
+================================================================================
+{{ order.shipping_address }}
+
+================================================================================
+ORDER ITEMS
+================================================================================
+{% for item in order.items.all %}
+{{ forloop.counter }}. {{ item.product.name }}
+   Store: {{ item.product.store.name|default:"N/A" }}
+   Quantity: {{ item.quantity }}
+   Unit Price: ${{ item.price|floatformat:2 }}
+   Total: ${{ item.total_price|floatformat:2 }}
+
+{% endfor %}================================================================================
+ORDER SUMMARY
+================================================================================
+Subtotal:         ${{ subtotal|floatformat:2 }}
+Tax (8%):         ${{ tax|floatformat:2 }}
+Shipping:         FREE
+--------------------------------------------------------------------------------
+TOTAL AMOUNT:     ${{ order.total_amount|floatformat:2 }}
+================================================================================
+
+THANK YOU FOR YOUR ORDER!
+
+We appreciate your business and will process your order promptly.
+
+IMPORTANT INFORMATION:
+- You will receive updates about your order status via email
+- For any queries, please contact us with your Order ID: {{ order.order_id }}
+- Delivery usually takes 3-7 business days depending on your location
+- If you have any issues with your order, please contact our support team
+
+Contact Information:
+Website: http://127.0.0.1:8000/
+Support: http://127.0.0.1:8000/contact/
+Track Orders: http://127.0.0.1:8000/orders/
+
+================================================================================
+© {{ "now"|date:"Y" }} Himalayan eCommerce. All rights reserved.
+================================================================================

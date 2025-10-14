@@ -1,0 +1,338 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% load product_images %}
+
+{% block title %}Products - Himalayan eCommerce - Shop Better with Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-img {
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 4px;
+    }
+    
+    .card:hover .product-img {
+        transform: scale(1.05);
+    }
+    
+    .product-img[src*="unsplash"] {
+        background: transparent;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .price-badge {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+    }
+    
+    .rating {
+        color: #ffc107;
+    }
+    
+    .btn-primary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+    }
+
+    /* Full-page background used for paginated pages (page 2,3...) */
+    .paged-background {
+        background-image: url("{% static 'img/products/himalaya_banner.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        position: relative;
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+    .paged-background::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        /* darker gradient overlay for stronger contrast and legibility */
+        background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.25));
+        pointer-events: none;
+        mix-blend-mode: multiply;
+    }
+    .paged-background > .container { position: relative; z-index: 2; }
+    /* Smooth background transitions for position & zoom */
+    .paged-background {
+        transition: background-position 0.12s linear, background-size 0.25s linear;
+        will-change: background-position, background-size;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Lightweight parallax effect for the paged background.
+// Only runs when there's a .paged-background element.
+(function() {
+    var bg = document.querySelector('.paged-background');
+    if (!bg) return;
+    // Read data attributes if set (allowing server overrides). Defaults:
+    var intensity = parseFloat(bg.getAttribute('data-parallax-intensity')) || 0.35; // movement multiplier
+    var maxZoom = parseFloat(bg.getAttribute('data-parallax-max-zoom')) || 1.03; // max background-size (scale)
+    var baseSize = 100; // percent
+    var ticking = false;
+
+    function update() {
+        var offset = window.pageYOffset || document.documentElement.scrollTop;
+        // Parallax vertical offset
+        var y = Math.round(offset * intensity);
+        bg.style.backgroundPosition = 'center ' + (-y) + 'px';
+        // Subtle zoom: map offset to [0, maxZoom-1]
+        var docH = document.documentElement.scrollHeight - window.innerHeight;
+        var pct = docH > 0 ? Math.min(1, offset / docH) : 0;
+        var scale = 1 + (maxZoom - 1) * pct;
+        // Apply background-size as percentage to achieve zoom effect
+        bg.style.backgroundSize = Math.round(baseSize * scale) + '%';
+        ticking = false;
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(update);
+            ticking = true;
+        }
+    }
+
+    // Initial update
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+})();
+</script>
+{% endblock %}
+
+{% block content %}
+{% comment %} If this page is a paginated page (page 2+), apply a full-page backdrop using the Himalayan banner image. {% endcomment %}
+{% if page_obj and page_obj.number and page_obj.number > 1 %}
+<div class="paged-background">
+    <div class="container my-4">
+{% else %}
+    <div class="container my-4">
+{% endif %}
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Filters Sidebar -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-filter me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <!-- Search -->
+                        <div class="mb-3">
+                            <label class="form-label">Search</label>
+                            <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Search products...">
+                        </div>
+                        
+                        <!-- Category -->
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category" onchange="this.form.submit()">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            {% if selected_store %}
+            <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                <i class="fas fa-filter me-2"></i>
+                <div>Filtering: Vendor —
+                    {% for s in categories %}{% endfor %}
+                    {% comment %}Find store name by id using template logic; a simple placeholder if not available{% endcomment %}
+                    {% with store_obj=selected_store %}
+                        {% if store_obj %}
+                            {% comment %}selected_store is a string id; try to render store name via the context's featured_products or by a lookup in page_obj.object_list{% endcomment %}
+                            {% for p in page_obj.object_list %}
+                                {% if p.store and p.store.pk|stringformat:"s" == selected_store %}
+                                    <strong>{{ p.store.name }}</strong>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <strong>Selected Vendor</strong>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-sm btn-light ms-auto">Clear</a>
+            </div>
+            {% endif %}
+            <!-- Featured Products for this filter -->
+            {% if featured_products %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="mb-3">Featured Products</h4>
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for product in featured_products %}
+                        <div style="width: 160px;">
+                            <a href="{% url 'shop:product_detail' product.pk %}" class="text-decoration-none text-dark">
+                                <div class="card">
+                                    <img src="{% product_image product 'list' %}" class="card-img-top" style="height:100px;object-fit:cover;" alt="{{ product.name }}">
+                                    <div class="card-body p-2">
+                                        <small class="d-block text-truncate">{{ product.name }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <!-- Product inspiration gallery with high-quality images -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Premium Running Shoes" class="img-thumbnail" style="width:100px;height:70px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Professional Dumbbells Set" class="img-thumbnail" style="width:100px;height:70px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Premium Yoga Mat" class="img-thumbnail" style="width:100px;height:70px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Professional Tennis Racket" class="img-thumbnail" style="width:100px;height:70px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Discover More Products" class="img-thumbnail" style="width:100px;height:70px;object-fit:cover;">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% if page_obj and page_obj.object_list %}
+                    {% for product in page_obj.object_list %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                       <img src="{% product_image product 'list' %}" 
+                                 class="card-img-top product-img" 
+                                 alt="{{ product.name }}" 
+                                 style="height: 200px; object-fit: cover;"
+                                 loading="lazy"
+                                 onerror="this.style.backgroundColor='#f8f9fa'; this.style.display='block';">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-muted small">
+                                    {% if product.store and product.store.is_active %}
+                                        <a href="{% url 'shop:product_list' %}?store={{ product.store.pk }}">{{ product.store.name }}</a>
+                                    {% else %}
+                                        {{ product.store.name }}
+                                    {% endif %}
+                                </p>
+                                <p class="card-text flex-grow-1">{{ product.description|truncatechars:80 }}</p>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="price-badge">${{ product.price }}</span>
+                                        {% if product.average_rating > 0 %}
+                                        <div class="rating">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= product.average_rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'shop:product_detail' product.pk %}" class="btn btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </a>
+                                        {% if product.quantity > 0 %}
+                                        <form method="post" action="{% url 'shop:add_to_cart' product.pk %}" class="mb-0">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-success w-100">
+                                                <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <button class="btn btn-secondary w-100" disabled>
+                                            <i class="fas fa-times me-1"></i>Out of Stock
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    {% if product.quantity <= 5 and product.quantity > 0 %}
+                                    <small class="text-warning mt-1 d-block text-center">Only {{ product.quantity }} left!</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center">
+                        <i class="fas fa-search fa-5x text-muted mb-3"></i>
+                        <h3>No products found</h3>
+                        <p class="text-muted">Try adjusting your search criteria</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}sort={{ sort_by }}&page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}sort={{ sort_by }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}sort={{ sort_by }}&page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}sort={{ sort_by }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% if page_obj and page_obj.number and page_obj.number > 1 %}
+</div>
+{% endif %}

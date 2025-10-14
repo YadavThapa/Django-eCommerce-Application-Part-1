@@ -1,0 +1,37 @@
+--- RUN: main\tests_organized\functional\test_enhanced_checkout.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\functional\test_enhanced_checkout.py"
+--- OUTPUT ---
+🧪 Enhanced Checkout System Test
+Time: 2025-10-13 17:45:13
+
+⚙️  Checking Email Configuration
+------------------------------
+Email Backend: django.core.mail.backends.console.EmailBackend
+Email Host: smtp.gmail.com
+Email Port: 587
+Use TLS: True
+Default From Email: noreply@himalayanecommerce.com
+✅ Console email backend - emails will print to console
+
+📧 Verifying Email Templates
+------------------------------
+✅ Template exists: shop/templates/shop/email/invoice.html
+   Template size: 70 bytes
+   ⚠️  Template seems too small
+✅ Template exists: shop/templates/shop/email/invoice.txt
+   Template size: 96 bytes
+   ⚠️  Template seems too small
+🛒 Testing Enhanced Checkout System
+==================================================
+✅ Found test user: testbuyer (test@buyer.com)
+✅ Test user logged in successfully
+
+📦 Adding products to cart...
+   ❌ Failed to add Premium Cotton T-Shirt to cart
+   ❌ Failed to add Smart Fitness Watch to cart
+   ❌ Failed to add Wireless Bluetooth Headphones to cart
+❌ No products could be added to cart
+
+⚠️  Some tests failed. Check the output above.
+
+--- EXIT CODE: 1

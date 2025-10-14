@@ -1,0 +1,52 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Delete Store - {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Delete Store</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if store.logo %}
+                            <img src="{{ store.logo.url }}" alt="{{ store.name }}" class="img-thumbnail mb-3" style="max-width: 100px;">
+                        {% else %}
+                            <div class="bg-light p-3 rounded mb-3 d-inline-block">
+                                <i class="fas fa-store text-muted fa-3x"></i>
+                            </div>
+                        {% endif %}
+                        <h5>{{ store.name }}</h5>
+                        <p class="text-muted">{{ store.description|truncatewords:20 }}</p>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. Deleting this store will also remove:
+                        <ul class="mb-0 mt-2">
+                            <li>All products in this store</li>
+                            <li>Store analytics and data</li>
+                            <li>Customer reviews for store products</li>
+                        </ul>
+                    </div>
+                    
+                    <p>Are you sure you want to delete the store "<strong>{{ store.name }}</strong>"?</p>
+                    
+                    <form method="post" class="d-flex gap-2 justify-content-center">
+                        {% csrf_token %}
+                        <a href="{% url 'shop:store_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Delete Store
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,330 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% load product_images %}
+
+{% block title %}Home - Himalayan eCommerce - Shop Better with Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-banner {
+        background: url('https://www.wondersofnepal.com/wp-content/uploads/2019/11/nepal-pokhara-9.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+        overflow: hidden;
+        min-height: 400px;
+    }
+    
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-banner h1 {
+        text-shadow: 4px 4px 8px rgba(0,0,0,1), 2px 2px 4px rgba(0,0,0,0.8);
+        font-weight: 700;
+        color: #ffffff;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px 25px;
+        border-radius: 10px;
+        display: inline-block;
+    }
+    
+    .hero-banner p {
+        text-shadow: 3px 3px 6px rgba(0,0,0,1), 1px 1px 3px rgba(0,0,0,0.8);
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: #ffffff;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px 20px;
+        border-radius: 8px;
+        display: inline-block;
+        margin-top: 10px;
+    }
+    
+    .btn-shop-now {
+        background: rgba(255, 255, 255, 0.95);
+        color: #333;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-shadow: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-shop-now:hover {
+        background: rgba(255, 255, 255, 1);
+        color: #333;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    
+
+    
+    .product-img {
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 4px;
+    }
+    
+    .card:hover .product-img {
+        transform: scale(1.05);
+    }
+    
+    .product-img[src*="unsplash"] {
+        background: transparent;
+    }
+    .category-card {
+        cursor: pointer;
+    }
+    /* Ensure the stretched-link overlay sits above card content so the whole card is clickable */
+    .category-card .stretched-link,
+    .category-card .stretched-link::after {
+        position: absolute !important;
+        inset: 0 !important;
+        z-index: 9999 !important;
+        pointer-events: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section with Nepal Background -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="hero-banner text-white rounded p-5 d-flex align-items-center justify-content-center">
+                <div class="text-center hero-content">
+                    <h1 class="display-4 mb-4">Welcome to Himalayan eCommerce</h1>
+                    <p class="lead mb-4">Shop Better with Us — discover quality products from trusted vendors</p>
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-shop-now btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    {% if categories %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Shop by Category</h2>
+            <div class="row">
+                {% for category in categories %}
+                <div class="col-md-2 col-sm-4 col-6 mb-3">
+                    <div class="card text-center h-100 category-card position-relative" style="
+                            {% if 'electronic' in category.name.lower or 'tech' in category.name.lower or 'gadget' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'cloth' in category.name.lower or 'fashion' in category.name.lower or 'apparel' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'home' in category.name.lower or 'garden' in category.name.lower or 'furniture' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'book' in category.name.lower or 'education' in category.name.lower or 'learning' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'sport' in category.name.lower or 'fitness' in category.name.lower or 'health' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'beauty' in category.name.lower or 'cosmetic' in category.name.lower or 'skincare' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'toy' in category.name.lower or 'game' in category.name.lower or 'kid' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'food' in category.name.lower or 'grocery' in category.name.lower or 'kitchen' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% elif 'jewelry' in category.name.lower or 'accessory' in category.name.lower or 'watch' in category.name.lower %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% else %}
+                                background: 
+                                    linear-gradient(135deg, rgba(0, 123, 255, 0.4) 0%, rgba(0, 123, 255, 0.6) 100%),
+                                    url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');
+                            {% endif %}
+                            background-size: cover;
+                            background-position: center;
+                            border: none; 
+                            transition: all 0.3s ease;
+                            position: relative;
+                            overflow: hidden;">
+                            <div class="card-body d-flex flex-column justify-content-center" style="min-height: 120px; position: relative; z-index: 2;">
+                                {% if 'electronic' in category.name.lower or 'tech' in category.name.lower %}
+                                    <i class="fas fa-laptop fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'cloth' in category.name.lower or 'fashion' in category.name.lower %}
+                                    <i class="fas fa-tshirt fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'home' in category.name.lower or 'garden' in category.name.lower %}
+                                    <i class="fas fa-home fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'book' in category.name.lower or 'education' in category.name.lower %}
+                                    <i class="fas fa-book fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'sport' in category.name.lower or 'fitness' in category.name.lower %}
+                                    <i class="fas fa-dumbbell fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'beauty' in category.name.lower or 'cosmetic' in category.name.lower %}
+                                    <i class="fas fa-spa fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'toy' in category.name.lower or 'game' in category.name.lower %}
+                                    <i class="fas fa-gamepad fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'food' in category.name.lower or 'grocery' in category.name.lower %}
+                                    <i class="fas fa-utensils fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% elif 'jewelry' in category.name.lower or 'accessory' in category.name.lower %}
+                                    <i class="fas fa-gem fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% else %}
+                                    <i class="fas fa-cube fa-2x text-white mb-2" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.8);"></i>
+                                {% endif %}
+                                <h6 class="card-title text-white fw-bold" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">{{ category.name }}</h6>
+                            </div>
+                            <a href="{% url 'shop:product_list' %}?category={{ category.id }}" class="stretched-link" aria-label="Browse {{ category.name }}"></a>
+                        </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Featured Products -->
+    {% if featured_products %}
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Featured Products</h2>
+            <div class="row">
+                {% for product in featured_products %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                          <img src="{% product_image product 'list' %}" 
+                             class="card-img-top product-img" 
+                             alt="{{ product.name }}" 
+                             style="height: 200px; object-fit: cover;"
+                             loading="lazy"
+                             onerror="this.style.backgroundColor='#f8f9fa'; this.style.display='block';">
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text text-muted small">
+                                {% if product.store and product.store.is_active %}
+                                    <a href="{% url 'shop:product_list' %}?store={{ product.store.pk }}">{{ product.store.name }}</a>
+                                {% else %}
+                                    {{ product.store.name }}
+                                {% endif %}
+                            </p>
+                            <p class="card-text flex-grow-1">{{ product.description|truncatechars:100 }}</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="text-primary mb-0">${{ product.price }}</h5>
+                                    {% if product.average_rating > 0 %}
+                                    <div class="rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= product.average_rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'shop:product_detail' product.pk %}" 
+                                       class="btn btn-primary">
+                                        View Details
+                                    </a>
+                                </div>
+                                
+                                {% if product.quantity <= 5 and product.quantity > 0 %}
+                                <small class="text-warning">Only {{ product.quantity }} left!</small>
+                                {% elif product.quantity == 0 %}
+                                <small class="text-danger">Out of stock</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Related Picks with high-quality images -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6 class="mb-2">Related Picks</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Premium Running Shoes" class="img-thumbnail" style="width:120px;height:80px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1517963879433-6ad2b056d712?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Professional Dumbbells Set" class="img-thumbnail" style="width:120px;height:80px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Premium Yoga Mat" class="img-thumbnail" style="width:120px;height:80px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Professional Tennis Racket" class="img-thumbnail" style="width:120px;height:80px;object-fit:cover;">
+                        <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Discover More Products" class="img-thumbnail" style="width:120px;height:80px;object-fit:cover;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'shop:product_list' %}" class="btn btn-outline-primary">
+                    View All Products <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <div class="card">
+                <div class="card-body">
+                    <i class="fas fa-box-open fa-5x text-muted mb-3"></i>
+                    <h3>No Products Available</h3>
+                    <p class="text-muted">Check back later for amazing products!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Call to Action for Vendors -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="bg-light rounded p-4 text-center">
+                <h3>Want to Start Selling?</h3>
+                <p class="text-muted">Join our platform as a vendor and reach thousands of customers</p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'shop:register' %}" class="btn btn-success">
+                    <i class="fas fa-store me-2"></i>Become a Vendor
+                </a>
+                {% elif user.profile.role == 'buyer' %}
+                <p class="text-info">Contact support to upgrade your account to vendor status</p>
+                {% else %}
+                <a href="{% url 'shop:vendor_dashboard' %}" class="btn btn-success">
+                    <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

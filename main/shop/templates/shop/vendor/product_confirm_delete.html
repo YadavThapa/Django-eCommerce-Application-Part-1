@@ -1,0 +1,65 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Delete Product - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Delete Product</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-thumbnail mb-3" style="max-width: 150px;">
+                        {% else %}
+                            <div class="bg-light p-3 rounded mb-3 d-inline-block">
+                                <i class="fas fa-box text-muted fa-3x"></i>
+                            </div>
+                        {% endif %}
+                        <h5>{{ product.name }}</h5>
+                        <p class="text-muted">{{ product.description|truncatewords:20 }}</p>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <strong class="text-success">${{ product.price }}</strong>
+                                <small class="d-block text-muted">Price</small>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-info">{{ product.quantity }}</strong>
+                                <small class="d-block text-muted">In Stock</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. Deleting this product will also remove:
+                        <ul class="mb-0 mt-2">
+                            <li>All customer reviews for this product</li>
+                            <li>Product analytics and sales data</li>
+                            <li>Any active shopping cart items containing this product</li>
+                        </ul>
+                    </div>
+                    
+                    <p>Are you sure you want to delete the product "<strong>{{ product.name }}</strong>"?</p>
+                    
+                    <form method="post" class="d-flex gap-2 justify-content-center">
+                        {% csrf_token %}
+                        <a href="{% url 'shop:vendor_products' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Delete Product
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-muted">
+                    <small>Store: {{ product.store.name }} | Created: {{ product.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

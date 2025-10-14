@@ -1,0 +1,101 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Cart Link Test - Himalayan eCommerce{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-bug me-2"></i>Cart Link Test Page
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Test Links -->
+    <div class="alert alert-info">
+        <h5>Test Different Cart Links:</h5>
+        <div class="btn-group-vertical w-100">
+            <a href="{% url 'shop:cart_detail' %}" class="btn btn-primary mb-2">
+                <i class="fas fa-shopping-cart me-2"></i>Cart Detail (Regular)
+            </a>
+            <a href="{% url 'shop:cart_debug' %}" class="btn btn-secondary mb-2">
+                <i class="fas fa-bug me-2"></i>Cart Debug
+            </a>
+            <a href="{% url 'shop:add_test_items' %}" class="btn btn-warning mb-2">
+                <i class="fas fa-plus me-2"></i>Add Test Items
+            </a>
+            <a href="/cart/" class="btn btn-info mb-2">
+                <i class="fas fa-link me-2"></i>Direct Cart URL
+            </a>
+        </div>
+    </div>
+    
+    <!-- Navigation Test -->
+    <div class="alert alert-success">
+        <h5>Navigation Cart Link Test:</h5>
+        <p>Check if the cart link in the navigation bar works:</p>
+        <ol>
+            <li>Look at the top navigation bar</li>
+            <li>Find the "Cart" link with the shopping cart icon</li>
+            <li>Click on it - it should navigate to the cart page</li>
+            <li>If it has a red badge with "0", the badge should not interfere with clicking</li>
+        </ol>
+    </div>
+    
+    <!-- Debug Information -->
+    <div class="alert alert-secondary">
+        <h5>Debug Information:</h5>
+        <p><strong>Current User:</strong> {{ user.username|default:"Anonymous" }}</p>
+        <p><strong>User Authenticated:</strong> {{ user.is_authenticated }}</p>
+        <p><strong>Cart Items Count:</strong> {{ cart_items_count|default:"Not available" }}</p>
+        <p><strong>Cart Total:</strong> ${{ cart_total|default:"0.00" }}</p>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="alert alert-warning">
+        <h5>Testing Instructions:</h5>
+        <ol>
+            <li><strong>Add Test Items:</strong> Click "Add Test Items" to populate cart</li>
+            <li><strong>Check Navigation:</strong> Look for updated badge count in navigation</li>
+            <li><strong>Test Cart Link:</strong> Click cart icon in navigation bar</li>
+            <li><strong>Verify Functionality:</strong> Ensure cart page loads with items</li>
+        </ol>
+    </div>
+    
+    <!-- JavaScript Test -->
+    <div class="mt-4">
+        <button id="testCartNavigation" class="btn btn-danger">
+            <i class="fas fa-mouse-pointer me-2"></i>Test Navigation Cart Click (JS)
+        </button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const testButton = document.getElementById('testCartNavigation');
+    testButton.addEventListener('click', function() {
+        // Find cart link in navigation
+        const cartLink = document.querySelector('a[href*="cart_detail"]');
+        if (cartLink) {
+            console.log('Found cart link:', cartLink.href);
+            console.log('Cart link visible:', cartLink.offsetHeight > 0);
+            console.log('Cart link clickable:', cartLink.style.pointerEvents !== 'none');
+            
+            // Highlight the cart link
+            cartLink.style.border = '3px solid red';
+            cartLink.style.borderRadius = '5px';
+            
+            alert('Cart link found and highlighted! Check the navigation bar.');
+            
+            setTimeout(() => {
+                cartLink.style.border = '';
+                cartLink.style.borderRadius = '';
+            }, 3000);
+        } else {
+            alert('Cart link not found in navigation!');
+        }
+    });
+});
+</script>
+{% endblock %}

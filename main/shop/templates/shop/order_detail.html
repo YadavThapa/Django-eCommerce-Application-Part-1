@@ -1,0 +1,209 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Order {{ order.order_id }} - Himalayan eCommerce{% endblock %}
+
+{% block extra_css %}
+<style>
+.order-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+.order-info-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+.order-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+.order-item:hover {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+.status-pending { background: #fff3cd; color: #856404; }
+.status-processing { background: #cce5ff; color: #004085; }
+.status-shipped { background: #d4edda; color: #155724; }
+.status-delivered { background: #d1ecf1; color: #0c5460; }
+.status-cancelled { background: #f8d7da; color: #721c24; }
+.order-summary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,123,255,0.3);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Order Header -->
+    <div class="order-header">
+        <h1><i class="fas fa-receipt me-3"></i>Order Details</h1>
+        <h3 class="mb-0">{{ order.order_id }}</h3>
+        <p class="mb-0 mt-2">Thank you for your order! A confirmation email has been sent to {{ order.buyer.email }}</p>
+    </div>
+    
+    <div class="row">
+        <!-- Order Information -->
+        <div class="col-lg-8 mb-4">
+            <div class="order-info-card">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h5><i class="fas fa-info-circle me-2 text-primary"></i>Order Information</h5>
+                        <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+                        <p><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="status-badge status-{{ order.status }}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </p>
+                        <p><strong>Payment Method:</strong> {{ order.get_payment_method_display|default:"Cash on Delivery" }}</p>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <h5><i class="fas fa-user me-2 text-primary"></i>Customer Information</h5>
+                        <p><strong>Name:</strong> {{ order.buyer.get_full_name|default:order.buyer.username }}</p>
+                        <p><strong>Email:</strong> {{ order.buyer.email }}</p>
+                        <p><strong>Username:</strong> {{ order.buyer.username }}</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5><i class="fas fa-shipping-fast me-2 text-primary"></i>Shipping Address</h5>
+                    <div class="bg-light p-3 rounded">
+                        {{ order.shipping_address|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="order-info-card">
+                <h5 class="mb-4"><i class="fas fa-shopping-bag me-2 text-primary"></i>Order Items</h5>
+                
+                {% for item in order.items.all %}
+                <div class="order-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h6 class="mb-1">{{ item.product.name }}</h6>
+                            <small class="text-muted">
+                                <i class="fas fa-store me-1"></i>{{ item.product.store.name }}
+                            </small>
+                            {% if item.product.description %}
+                            <p class="text-muted mt-2 mb-0">{{ item.product.description|truncatewords:20 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <span class="badge bg-primary">Qty: {{ item.quantity }}</span>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <strong>${{ item.price|floatformat:2 }}</strong>
+                            <small class="d-block text-muted">per item</small>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <h6 class="mb-0 text-success">${{ item.total_price|floatformat:2 }}</h6>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="order-summary">
+                <h5 class="mb-4">
+                    <i class="fas fa-calculator me-2"></i>Order Summary
+                </h5>
+                
+                {% with subtotal=order.items.all|length|floatformat:0 %}
+                    {% with item_total=0 %}
+                        {% for item in order.items.all %}
+                            {% with item_total=item_total|add:item.total_price %}{% endwith %}
+                        {% endfor %}
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal ({{ order.items.count }} items):</span>
+                            <span>${{ order.total_amount|floatformat:2|add:"-"|add:order.total_amount|mul:"0.08"|floatformat:2 }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tax (8%):</span>
+                            <span>${{ order.total_amount|mul:"0.08"|div:"1.08"|floatformat:2 }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Shipping:</span>
+                            <span class="text-light">FREE</span>
+                        </div>
+                        
+                        <div class="border-top border-light pt-3">
+                            <div class="d-flex justify-content-between">
+                                <h5>Total Amount:</h5>
+                                <h5 class="fw-bold">${{ order.total_amount|floatformat:2 }}</h5>
+                            </div>
+                        </div>
+                    {% endwith %}
+                {% endwith %}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h6><i class="fas fa-envelope me-2 text-primary"></i>Need Help?</h6>
+                    <p class="text-muted">Contact our customer support for any questions about your order.</p>
+                    <a href="mailto:support@himalayanecommerce.com" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-envelope me-1"></i>Email Support
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Order Status -->
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <h6><i class="fas fa-truck me-2 text-success"></i>Order Status</h6>
+                    <p class="mb-1"><strong>Current Status:</strong></p>
+                    <span class="status-badge status-{{ order.status }}">
+                        {{ order.get_status_display }}
+                    </span>
+                    {% if order.status == 'pending' %}
+                    <p class="text-muted mt-2 mb-0">Your order is being processed. You'll receive updates soon!</p>
+                    {% elif order.status == 'processing' %}
+                    <p class="text-muted mt-2 mb-0">Your order is being prepared for shipment.</p>
+                    {% elif order.status == 'shipped' %}
+                    <p class="text-muted mt-2 mb-0">Your order is on its way! Expected delivery within 3-5 business days.</p>
+                    {% elif order.status == 'delivered' %}
+                    <p class="text-muted mt-2 mb-0">Your order has been delivered. Enjoy your purchase!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Shopping -->
+    <div class="text-center mt-5">
+        <a href="{% url 'shop:product_list' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-cart me-2"></i>Continue Shopping
+        </a>
+        <a href="{% url 'shop:cart_detail' %}" class="btn btn-outline-secondary btn-lg ms-3">
+            <i class="fas fa-shopping-bag me-2"></i>View Cart
+        </a>
+    </div>
+</div>
+{% endblock %}

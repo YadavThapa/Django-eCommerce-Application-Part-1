@@ -1,0 +1,50 @@
+# Virtual environments
+.venv/
+venv/
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editor directories and metadata
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python tooling caches
+.mypy_cache/
+.pytest_cache/
+
+# Archives and snapshots
+archived/
+archived/*
+
+# SQLite DB
+*.sqlite3
+db.sqlite3
+
+# Media and uploaded files
+media/
+
+# Static build artifacts
+staticfiles/
+static/
+static_assets/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Compiled assets
+*.min.js
+*.map

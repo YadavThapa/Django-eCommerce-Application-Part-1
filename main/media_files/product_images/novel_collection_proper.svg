@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#8e44ad;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#34495e;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    
+    <!-- Book Cover Background -->
+    <rect width="400" height="300" fill="url(#bookGrad)" rx="5"/>
+    
+    <!-- Book Cover -->
+    <rect x="80" y="50" width="240" height="200" fill="#ecf0f1" rx="8" stroke="#bdc3c7" stroke-width="2"/>
+    
+    <!-- Book Spine Effect -->
+    <rect x="75" y="55" width="10" height="190" fill="#95a5a6" rx="2"/>
+    
+    <!-- Title Area -->
+    <rect x="100" y="80" width="200" height="60" fill="transparent"/>
+    
+    <!-- Book Title -->
+    <text x="200" y="110" font-family="serif" font-size="18" font-weight="bold" 
+          text-anchor="middle" fill="#8e44ad" opacity="0.9">
+        The
+    </text>
+    <text x="200" y="130" font-family="serif" font-size="18" font-weight="bold" 
+          text-anchor="middle" fill="#8e44ad" opacity="0.9">
+        Great Novel
+    </text>
+    
+    <!-- Author area -->
+    <text x="200" y="210" font-family="serif" font-size="12" 
+          text-anchor="middle" fill="#7f8c8d">
+        Premium Edition
+    </text>
+    
+    <!-- Book pages effect -->
+    <rect x="322" y="52" width="3" height="196" fill="#ecf0f1"/>
+    <rect x="326" y="54" width="3" height="192" fill="#d5dbdb"/>
+</svg>

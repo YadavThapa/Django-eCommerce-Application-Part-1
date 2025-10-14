@@ -1,0 +1,5 @@
+--- RUN: main\tests_organized\unit\test_store_detail_tests.py
+--- CMD: C:\Users\hemja\OneDrive\Desktop\Last Cleanup\.venv\Scripts\python.exe "C:\Users\hemja\OneDrive\Desktop\Last Cleanup\main\tests_organized\unit\test_store_detail_tests.py"
+--- OUTPUT ---
+
+--- EXIT CODE: 0

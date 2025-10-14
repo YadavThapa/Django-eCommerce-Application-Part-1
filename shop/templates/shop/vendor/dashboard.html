@@ -1,0 +1,14 @@
+{% load product_images %}
+<!doctype html>
+<html>
+  <head>
+    <title>Vendor Dashboard (fallback)</title>
+  </head>
+  <body>
+    <h1>Vendor Dashboard</h1>
+    <p>Minimal fallback template for vendor dashboard during integration testing.</p>
+    {% if user.is_authenticated %}
+      <p>Welcome, {{ user.username }}.</p>
+    {% endif %}
+  </body>
+</html>

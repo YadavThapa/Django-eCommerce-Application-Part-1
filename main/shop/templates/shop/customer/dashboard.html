@@ -1,0 +1,307 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Customer Dashboard - Himalayan eCommerce{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+.stats-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.stats-card:hover {
+    transform: scale(1.05);
+}
+.recent-product {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.recent-product:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.product-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.order-status {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 15px;
+}
+.welcome-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    overflow: hidden;
+}
+.quick-action {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.quick-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    color: inherit;
+    text-decoration: none;
+}
+.category-card {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+.category-card:hover {
+    background: linear-gradient(45deg, #e9ecef, #dee2e6);
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <!-- Welcome Section -->
+    <div class="welcome-section mb-4 p-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="fas fa-user-circle me-2"></i>Welcome back, {{ user.first_name|default:user.username }}!</h2>
+                <p class="mb-0 opacity-75">Discover amazing products from our vendors and enjoy seamless shopping</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex justify-content-end align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-shopping-bag fa-2x opacity-50"></i>
+                    </div>
+                    <div>
+                        <small class="opacity-75">Member since</small><br>
+                        <strong>{{ user.date_joined|date:"M Y" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4 g-3">
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white h-100 shadow-sm stats-card" onclick="location.href='{% url 'shop:cart_detail' %}'">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ cart_items_count|default:0 }}</h4>
+                    <p class="mb-0 small">Cart Items</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-success text-white h-100 shadow-sm stats-card" onclick="location.href='{% url 'shop:order_history' %}'">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-box fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_orders|default:0 }}</h4>
+                    <p class="mb-0 small">Orders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-info text-white h-100 shadow-sm stats-card">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-star fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_reviews|default:0 }}</h4>
+                    <p class="mb-0 small">Reviews</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-warning text-white h-100 shadow-sm stats-card">
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <i class="fas fa-heart fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ favorite_products|default:0 }}</h4>
+                    <p class="mb-0 small">Wishlist</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="{% url 'shop:product_list' %}" class="quick-action">
+                                <i class="fas fa-search text-primary fa-2x mb-2"></i>
+                                <div class="small">Browse Products</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'shop:cart_detail' %}" class="quick-action">
+                                <i class="fas fa-shopping-cart text-success fa-2x mb-2"></i>
+                                <div class="small">View Cart</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'shop:order_history' %}" class="quick-action">
+                                <i class="fas fa-history text-info fa-2x mb-2"></i>
+                                <div class="small">Order History</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'shop:profile' %}" class="quick-action">
+                                <i class="fas fa-user-cog text-warning fa-2x mb-2"></i>
+                                <div class="small">Profile</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-card h-100">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Orders</h5>
+                    <a href="{% url 'shop:order_history' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_orders %}
+                        {% for order in recent_orders|slice:":3" %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                            <div>
+                                <strong>#{{ order.order_id|truncatechars:8 }}</strong><br>
+                                <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="text-end">
+                                <strong class="text-success">${{ order.total_amount }}</strong><br>
+                                <span class="badge bg-primary order-status">{{ order.status|capfirst }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-bag text-muted fa-2x mb-2"></i>
+                            <p class="text-muted mb-2">No orders yet</p>
+                            <a href="{% url 'shop:product_list' %}" class="btn btn-primary btn-sm">Start Shopping</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Products -->
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-card h-100">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Featured Products</h5>
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-sm btn-outline-primary">Browse All</a>
+                </div>
+                <div class="card-body">
+                    {% if featured_products %}
+                        {% for product in featured_products|slice:":3" %}
+                        <div class="recent-product d-flex align-items-center mb-3 p-2">
+                            <a href="{% url 'shop:product_detail' product.pk %}" class="d-flex align-items-center text-decoration-none">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img me-3">
+                                {% else %}
+                                    <div class="product-img me-3 bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 text-dark">{{ product.name|truncatechars:25 }}</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-success fw-bold">${{ product.price }}</span>
+                                        <small class="text-muted">{{ product.store.name }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-box text-muted fa-2x mb-2"></i>
+                            <p class="text-muted">No products available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3"><i class="fas fa-th-large me-2"></i>Shop by Category</h4>
+            <div class="row g-3">
+                {% for category in categories %}
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="{% url 'shop:product_list' %}?category={{ category.pk }}" class="text-decoration-none">
+                        <div class="category-card">
+                            <i class="fas fa-tag fa-2x text-primary mb-2"></i>
+                            <h6 class="mb-0">{{ category.name }}</h6>
+                        </div>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-3">
+                        <p class="text-muted">Categories will appear here when added by administrators.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add loading states to stat cards
+    const statCards = document.querySelectorAll('.stats-card');
+    statCards.forEach(card => {
+        card.addEventListener('click', function() {
+            this.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    });
+
+    // Add hover effects to quick actions
+    const quickActions = document.querySelectorAll('.quick-action');
+    quickActions.forEach(action => {
+        action.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        action.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = 'white';
+        });
+    });
+});
+</script>
+{% endblock %}

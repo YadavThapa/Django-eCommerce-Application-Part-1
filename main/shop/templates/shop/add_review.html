@@ -1,0 +1,264 @@
+{% extends 'shop/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Review - {{ product.name }} - Himalayan eCommerce{% endblock %}
+
+{% block extra_css %}
+<style>
+.review-form-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 40px;
+    margin: 40px 0;
+}
+.product-info {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+.verification-badge {
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.verified-badge {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+}
+.unverified-badge {
+    background: linear-gradient(45deg, #ffc107, #fd7e14);
+    color: white;
+}
+.rating-stars {
+    font-size: 1.5rem;
+    color: #ffc107;
+}
+.form-group {
+    margin-bottom: 25px;
+}
+.btn-submit-review {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-submit-review:hover {
+    background: linear-gradient(45deg, #0056b3, #007bff);
+    transform: translateY(-2px);
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <h1><i class="fas fa-star me-2"></i>Add Your Review</h1>
+        <p class="text-muted">Share your experience with this product</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Product Information -->
+            <div class="product-info">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}" style="max-height: 120px;">
+                        {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 120px;">
+                                <i class="fas fa-image fa-2x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h4>{{ product.name }}</h4>
+                        <p class="text-muted mb-2">{{ product.description|truncatewords:20 }}</p>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary me-2">${{ product.price|floatformat:2 }}</span>
+                            <span class="badge bg-secondary">{{ product.store.name }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Form -->
+            <div class="review-form-container">
+                <!-- Verification Status -->
+                {% if has_purchased %}
+                    <div class="verification-badge verified-badge text-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Verified Purchase</strong>
+                        <p class="mb-0 small mt-1">You have purchased this product, so your review will be marked as verified</p>
+                    </div>
+                {% else %}
+                    <div class="verification-badge unverified-badge text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Unverified Review</strong>
+                        <p class="mb-0 small mt-1">You haven't purchased this product, so your review will be marked as unverified</p>
+                    </div>
+                {% endif %}
+
+                <h3 class="mb-4">
+                    <i class="fas fa-edit me-2"></i>Write Your Review
+                </h3>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Rating Field -->
+                    <div class="form-group">
+                        <label for="{{ form.rating.id_for_label }}" class="form-label">
+                            <i class="fas fa-star me-2"></i>Rating <span class="text-danger">*</span>
+                        </label>
+                        <div class="rating-input">
+                            {{ form.rating }}
+                        </div>
+                        <div class="rating-stars mt-2">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                        <small class="text-muted">Click on stars to set your rating</small>
+                        {% if form.rating.errors %}
+                            <div class="text-danger small mt-1">{{ form.rating.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Comment Field -->
+                    <div class="form-group">
+                        <label for="{{ form.comment.id_for_label }}" class="form-label">
+                            <i class="fas fa-comment me-2"></i>Your Review
+                        </label>
+                        {{ form.comment|add_class:"form-control" }}
+                        <small class="text-muted">
+                            {% if has_purchased %}
+                                Share your experience with this product as a verified purchaser
+                            {% else %}
+                                Share your thoughts about this product
+                            {% endif %}
+                        </small>
+                        {% if form.comment.errors %}
+                            <div class="text-danger small mt-1">{{ form.comment.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center">
+                        <button type="submit" class="btn-submit-review btn-lg me-3">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            {% if has_purchased %}
+                                Submit Verified Review
+                            {% else %}
+                                Submit Unverified Review
+                            {% endif %}
+                        </button>
+                        <a href="{% url 'shop:product_detail' product.pk %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Review Guidelines -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6><i class="fas fa-info-circle me-2"></i>Review Guidelines</h6>
+                    <ul class="small mb-0">
+                        <li>Be honest and helpful in your review</li>
+                        <li>Focus on the product's features, quality, and performance</li>
+                        <li>Avoid inappropriate language or personal attacks</li>
+                        {% if has_purchased %}
+                            <li><strong>Verified reviews</strong> are given more weight and visibility</li>
+                        {% else %}
+                            <li><strong>Unverified reviews</strong> are still valuable but marked differently</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Rating stars interaction
+    const stars = document.querySelectorAll('.rating-stars i');
+    const ratingInput = document.getElementById('{{ form.rating.id_for_label }}');
+    
+    stars.forEach((star, index) => {
+        star.addEventListener('click', function() {
+            const rating = index + 1;
+            ratingInput.value = rating;
+            
+            // Update visual stars
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.style.color = '#ffc107';
+                } else {
+                    s.style.color = '#dee2e6';
+                }
+            });
+        });
+        
+        star.addEventListener('mouseenter', function() {
+            const rating = index + 1;
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.style.color = '#ffc107';
+                } else {
+                    s.style.color = '#dee2e6';
+                }
+            });
+        });
+    });
+    
+    // Reset stars on mouse leave
+    document.querySelector('.rating-stars').addEventListener('mouseleave', function() {
+        const currentRating = ratingInput.value || 0;
+        stars.forEach((s, i) => {
+            if (i < currentRating) {
+                s.style.color = '#ffc107';
+            } else {
+                s.style.color = '#dee2e6';
+            }
+        });
+    });
+    
+    // Initialize stars based on current value
+    const currentRating = ratingInput.value || 0;
+    stars.forEach((s, i) => {
+        if (i < currentRating) {
+            s.style.color = '#ffc107';
+        } else {
+            s.style.color = '#dee2e6';
+        }
+    });
+
+    // Form submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const submitBtn = document.querySelector('.btn-submit-review');
+        const originalText = submitBtn.innerHTML;
+        
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+        submitBtn.disabled = true;
+        
+        // Re-enable if there's an error (fallback)
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }, 3000);
+    });
+});
+</script>
+{% endblock %}
