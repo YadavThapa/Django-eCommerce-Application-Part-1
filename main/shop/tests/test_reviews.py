@@ -59,4 +59,8 @@ class ReviewVerificationTests(TestCase):
         resp2 = self.client.post(url, {"rating": 3, "comment": "Again"}, follow=True)
         self.assertEqual(resp2.status_code, 200)
         reviews = Review.objects.filter(product=self.product, user=self.buyer)
-        self.assertEqual(reviews.count(), 1, "User should not be able to create duplicate reviews")
+        self.assertEqual(
+            reviews.count(),
+            1,
+            "User should not be able to create duplicate reviews",
+        )
